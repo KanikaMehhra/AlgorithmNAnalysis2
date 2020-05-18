@@ -5,6 +5,7 @@
 package solver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import grid.SudokuGrid;
@@ -30,7 +31,7 @@ public class BackTrackingSolver extends StdSudokuSolver {
 	}
 
 	public boolean solve(SudokuGrid grid, int assignmentNo) {
-		boolean result=true;
+		boolean result = true;
 		for (int i = assignmentNo; i < this.unassignedCells.size(); i++) {
 			String[] coords = this.unassignedCells.get(i).split(",");
 			int row = Integer.parseInt(coords[0]);
@@ -39,23 +40,26 @@ public class BackTrackingSolver extends StdSudokuSolver {
 			if (grid.getSudokuGrid()[row][col] != UNASSIGNED) {
 				vNum = grid.getListOfvalidIntegers().indexOf(grid.getSudokuGrid()[row][col]);
 			}
-			for (int v = vNum + 1; v < grid.getListOfvalidIntegers().size(); v++) {
+			for (int v = vNum + 1; v < grid.getListOfvalidIntegers().size();v++) {
 				grid.getSudokuGrid()[row][col] = grid.getListOfvalidIntegers().get(v);
 				if (grid.validate()) {
 					solve(grid, ++assignmentNo);
-					result= true;
+					result = true;
 					break;
 				} else {
+//					System.out.println("validated with " + row + col + grid.getListOfvalidIntegers().get(v));
+
 					grid.getSudokuGrid()[row][col] = UNASSIGNED;
-					result= false;
-					break;
+					result = false;
+					continue;
+					
 				}
 			}
 			if (grid.getSudokuGrid()[row][col] == UNASSIGNED) {
-					solve(grid, --assignmentNo);
+				solve(grid, --assignmentNo);
 			}
 		}
-		
+
 		return result;
 		// for (int row = 0; row < grid.getSudokuGridLength(); row++) {
 		// for (int col = 0; col < grid.getSudokuGridLength(); col++) {

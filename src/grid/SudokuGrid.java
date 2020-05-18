@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 /**
  * Abstract class representing the general interface for a Sudoku grid. Both
  * standard and Killer Sudoku extend from this abstract class.
@@ -129,6 +130,8 @@ public abstract class SudokuGrid {
 
 	public boolean commonValidate() {
 		for (int[] row : sudokuGrid) {
+
+			System.out.println(Arrays.toString(row));
 			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
 			rowList.removeAll(Collections.singleton(-1));
 			// checks first condition
