@@ -91,48 +91,49 @@ public class StdSudokuGrid extends SudokuGrid {
 
 	@Override
 	public boolean validate() {
-		for (int[] row : this.sudokuGrid) {
-			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
-			rowList.removeAll(Collections.singleton(-1));
-			// checks first condition
-			if (!this.listOfvalidIntegers.containsAll(rowList)) {
-				return false;
-			}
-			// checks second condition
-			if (!isHashLengthSame(rowList)) {
-				return false;
-			}
-		}
-
-		for (int j = 0; j < this.sudokuGridLength; j++) {
-			List<Integer> smallGridArray = new ArrayList<Integer>();
-			List<Integer> colList = new ArrayList<Integer>();
-
-			for (int i = 0; i < this.sudokuGridLength; i++) {
-				colList.add(this.sudokuGrid[i][j]);		
-				int smallGridSize=(int)Math.sqrt(this.sudokuGridLength);
-				smallGridArray.add(i, this.sudokuGrid[(j / smallGridSize) * smallGridSize + i / smallGridSize][j * smallGridSize % this.sudokuGridLength + i % smallGridSize]);
-			}
-			colList.removeAll(Collections.singleton(-1));
-			// checks third condition
-			if (!isHashLengthSame(colList)) {
-				return false;
-			}
-			smallGridArray.removeAll(Collections.singleton(-1));
-			// check fourth condition
-			if (!isHashLengthSame(smallGridArray)) {
-				return false;
-			}
-
-		}
-		
-		return true;
+		return commonValidate(this.sudokuGrid,this.listOfvalidIntegers,this.sudokuGridLength);
+//		for (int[] row : this.sudokuGrid) {
+//			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
+//			rowList.removeAll(Collections.singleton(-1));
+//			// checks first condition
+//			if (!this.listOfvalidIntegers.containsAll(rowList)) {
+//				return false;
+//			}
+//			// checks second condition
+//			if (!isHashLengthSame(rowList)) {
+//				return false;
+//			}
+//		}
+//
+//		for (int j = 0; j < this.sudokuGridLength; j++) {
+//			List<Integer> smallGridArray = new ArrayList<Integer>();
+//			List<Integer> colList = new ArrayList<Integer>();
+//
+//			for (int i = 0; i < this.sudokuGridLength; i++) {
+//				colList.add(this.sudokuGrid[i][j]);		
+//				int smallGridSize=(int)Math.sqrt(this.sudokuGridLength);
+//				smallGridArray.add(i, this.sudokuGrid[(j / smallGridSize) * smallGridSize + i / smallGridSize][j * smallGridSize % this.sudokuGridLength + i % smallGridSize]);
+//			}
+//			colList.removeAll(Collections.singleton(-1));
+//			// checks third condition
+//			if (!isHashLengthSame(colList)) {
+//				return false;
+//			}
+//			smallGridArray.removeAll(Collections.singleton(-1));
+//			// check fourth condition
+//			if (!isHashLengthSame(smallGridArray)) {
+//				return false;
+//			}
+//
+//		}
+//		
+//		return true;
 	} // end of validate()
 	
 //	@Override
-	public boolean isHashLengthSame(List<Integer> list) {
-		Set<Integer> hash = new HashSet<Integer>(list);
-		return (hash.size() == list.size());
-	}
+//	public boolean isHashLengthSame(List<Integer> list) {
+//		Set<Integer> hash = new HashSet<Integer>(list);
+//		return (hash.size() == list.size());
+//	}
 
 } // end of class StdSudokuGrid
