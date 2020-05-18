@@ -18,6 +18,39 @@ import java.util.stream.Collectors;
  * standard and Killer Sudoku extend from this abstract class.
  */
 public abstract class SudokuGrid {
+	protected int[][] sudokuGrid;
+	protected int sudokuGridLength;
+	protected List<Integer> listOfvalidIntegers;
+
+	public SudokuGrid() {
+		super();
+		this.sudokuGrid = null;
+		this.sudokuGridLength = 0;
+		this.listOfvalidIntegers = new ArrayList<Integer>();
+
+		// TODO: any necessary initialisation at the constructor
+	} 
+	
+	public void readFirstTwoLines(BufferedReader br) {
+		try {
+			String firstLine = br.readLine();
+
+			this.sudokuGridLength = Integer.parseInt(firstLine);
+			this.sudokuGrid = new int[this.sudokuGridLength][this.sudokuGridLength];
+
+			for (int[] row : this.sudokuGrid)
+				Arrays.fill(row, -1);
+
+			String secondLine = br.readLine();
+			String[] splitSecondLine = secondLine.split(" ");
+			for (String num : splitSecondLine) {
+				this.listOfvalidIntegers.add(Integer.parseInt(num));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	/**
 	 * Load the specified file and construct an initial grid from the contents of
@@ -81,7 +114,7 @@ public abstract class SudokuGrid {
 		Set<Integer> hash = new HashSet<Integer>(list);
 		return (hash.size() == list.size());
 	}
-	
+
 	public boolean commonValidate(int[][] sudokuGrid, List<Integer> listOfvalidIntegers, int sudokuGridLength) {
 		for (int[] row : sudokuGrid) {
 			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());

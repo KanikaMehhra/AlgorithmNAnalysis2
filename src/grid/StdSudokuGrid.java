@@ -6,12 +6,7 @@ package grid;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Class implementing the grid for standard Sudoku. Extends SudokuGrid (hence
@@ -22,15 +17,9 @@ import java.util.stream.Collectors;
  * your implementation).
  */
 public class StdSudokuGrid extends SudokuGrid {
-	private int[][] sudokuGrid;
-	private int sudokuGridLength;
-	private List<Integer> listOfvalidIntegers;
 
 	public StdSudokuGrid() {
 		super();
-		this.sudokuGrid = null;
-		this.sudokuGridLength = 0;
-		this.listOfvalidIntegers = new ArrayList<Integer>();
 	} // end of StdSudokuGrid()
 
 	/* ********************************************************* */
@@ -39,19 +28,7 @@ public class StdSudokuGrid extends SudokuGrid {
 	public void initGrid(String filename) throws FileNotFoundException, IOException {
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
 			String line;
-			String firstLine = br.readLine();
-			this.sudokuGridLength = Integer.parseInt(firstLine);
-			this.sudokuGrid = new int[this.sudokuGridLength][this.sudokuGridLength];
-
-			for (int[] row : this.sudokuGrid)
-				Arrays.fill(row, -1);
-
-			String secondLine = br.readLine();
-			String[] splitSecondLine = secondLine.split(" ");
-			for (String num : splitSecondLine) {
-				this.listOfvalidIntegers.add(Integer.parseInt(num));
-			}
-
+			readFirstTwoLines(br);
 			while ((line = br.readLine()) != null) {
 				String[] coordValue = line.split(" ");
 				String[] coord = coordValue[0].split(",");
@@ -82,58 +59,16 @@ public class StdSudokuGrid extends SudokuGrid {
 
 	@Override
 	public String toString() {
-		String result="";
+		String result = "";
 		for (int[] row : this.sudokuGrid) {
-			result+=Arrays.toString(row)+"\n";
+			result += Arrays.toString(row) + "\n";
 		}
 		return result;
 	} // end of toString()
 
 	@Override
 	public boolean validate() {
-		return commonValidate(this.sudokuGrid,this.listOfvalidIntegers,this.sudokuGridLength);
-//		for (int[] row : this.sudokuGrid) {
-//			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
-//			rowList.removeAll(Collections.singleton(-1));
-//			// checks first condition
-//			if (!this.listOfvalidIntegers.containsAll(rowList)) {
-//				return false;
-//			}
-//			// checks second condition
-//			if (!isHashLengthSame(rowList)) {
-//				return false;
-//			}
-//		}
-//
-//		for (int j = 0; j < this.sudokuGridLength; j++) {
-//			List<Integer> smallGridArray = new ArrayList<Integer>();
-//			List<Integer> colList = new ArrayList<Integer>();
-//
-//			for (int i = 0; i < this.sudokuGridLength; i++) {
-//				colList.add(this.sudokuGrid[i][j]);		
-//				int smallGridSize=(int)Math.sqrt(this.sudokuGridLength);
-//				smallGridArray.add(i, this.sudokuGrid[(j / smallGridSize) * smallGridSize + i / smallGridSize][j * smallGridSize % this.sudokuGridLength + i % smallGridSize]);
-//			}
-//			colList.removeAll(Collections.singleton(-1));
-//			// checks third condition
-//			if (!isHashLengthSame(colList)) {
-//				return false;
-//			}
-//			smallGridArray.removeAll(Collections.singleton(-1));
-//			// check fourth condition
-//			if (!isHashLengthSame(smallGridArray)) {
-//				return false;
-//			}
-//
-//		}
-//		
-//		return true;
+		return commonValidate(this.sudokuGrid, this.listOfvalidIntegers, this.sudokuGridLength);
 	} // end of validate()
-	
-//	@Override
-//	public boolean isHashLengthSame(List<Integer> list) {
-//		Set<Integer> hash = new HashSet<Integer>(list);
-//		return (hash.size() == list.size());
-//	}
 
 } // end of class StdSudokuGrid
