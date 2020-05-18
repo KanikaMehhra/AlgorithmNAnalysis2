@@ -6,8 +6,11 @@ package grid;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Class implementing the grid for standard Sudoku. Extends SudokuGrid (hence
@@ -27,7 +30,7 @@ public class StdSudokuGrid extends SudokuGrid {
 		super();
 		this.sudokuGrid = null;
 		this.sudokuGridLength = 0;
-		this.listOfvalidIntegers=new ArrayList<Integer>();
+		this.listOfvalidIntegers = new ArrayList<Integer>();
 		// TODO: any necessary initialisation at the constructor
 	} // end of StdSudokuGrid()
 
@@ -41,10 +44,10 @@ public class StdSudokuGrid extends SudokuGrid {
 			String firstLine = br.readLine();
 			this.sudokuGridLength = Integer.parseInt(firstLine);
 			this.sudokuGrid = new int[this.sudokuGridLength][this.sudokuGridLength];
-			
-			for (int[] row: this.sudokuGrid)
-			    Arrays.fill(row, -1);
-			
+
+			for (int[] row : this.sudokuGrid)
+				Arrays.fill(row, -1);
+
 			String secondLine = br.readLine();
 			String[] splitSecondLine = secondLine.split(" ");
 			for (String num : splitSecondLine) {
@@ -89,9 +92,26 @@ public class StdSudokuGrid extends SudokuGrid {
 	@Override
 	public boolean validate() {
 		// TODO
+		boolean result = true;
 
-		// placeholder
-		return false;
+		for (int[] row : this.sudokuGrid) {
+			// checks first condition
+			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
+			if (!this.listOfvalidIntegers.containsAll(rowList)) {
+				return false;
+			}
+			// checks second condition
+			Set<Integer> hash = new HashSet<Integer>(rowList);
+			if (hash.size() != rowList.size()) {
+				return false;
+			}
+		}
+
+		return result;
 	} // end of validate()
+
+	public boolean checkHashLength(Set<Integer> hash, List<Integer> rowList) {
+		return (hash.size() == rowList.size());
+	}
 
 } // end of class StdSudokuGrid
