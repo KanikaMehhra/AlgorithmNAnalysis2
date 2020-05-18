@@ -68,9 +68,26 @@ public class KillerSudokuGrid extends SudokuGrid {
 	@Override
 	public boolean validate() {
 		// TODO
-
+		if(!commonValidate())
+			return false;
+		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
+			int sum=0;
+			List<Integer>cageCoordValues=new ArrayList<Integer>();
+			
+			for(String coord:entry.getKey()) {
+				String[] coordSplit=coord.split(",");
+				int value=this.sudokuGrid[Integer.parseInt(coordSplit[0])][Integer.parseInt(coordSplit[1])];
+				sum+=value;
+				cageCoordValues.add(value);
+			}
+			if(sum!=entry.getValue())
+				return false;
+			if(!isHashLengthSame(cageCoordValues))
+				return false;
+		}
+			
 		// placeholder
-		return false;
+		return true;
 	} // end of validate()
 
 } // end of class KillerSudokuGrid

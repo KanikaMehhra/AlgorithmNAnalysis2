@@ -115,7 +115,7 @@ public abstract class SudokuGrid {
 		return (hash.size() == list.size());
 	}
 
-	public boolean commonValidate(int[][] sudokuGrid, List<Integer> listOfvalidIntegers, int sudokuGridLength) {
+	public boolean commonValidate() {
 		for (int[] row : sudokuGrid) {
 			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
 			rowList.removeAll(Collections.singleton(-1));

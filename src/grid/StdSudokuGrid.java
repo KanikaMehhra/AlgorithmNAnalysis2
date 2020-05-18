@@ -68,7 +68,7 @@ public class StdSudokuGrid extends SudokuGrid {
 
 	@Override
 	public boolean validate() {
-		return commonValidate(this.sudokuGrid, this.listOfvalidIntegers, this.sudokuGridLength);
+		return commonValidate();
 	} // end of validate()
 
 } // end of class StdSudokuGrid
