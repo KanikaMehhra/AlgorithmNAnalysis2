@@ -25,9 +25,47 @@ public class BackTrackingSolver extends StdSudokuSolver {
 
 	@Override
 	public boolean solve(SudokuGrid grid) {
-		setListOfUnassignedCells(grid.getSudokuGrid());
-		solve(grid, 0);
-		return grid.validate();
+//		setListOfUnassignedCells(grid.getSudokuGrid());
+//		solve(grid, 0);
+//		return grid.validate();
+		return SolveSudoku(grid,0,0);
+	}
+
+	public boolean SolveSudoku(SudokuGrid grid, int i, int j) {
+		int[][] matrix = grid.getSudokuGrid();
+		// if the index reached the end
+		if (i == matrix.length - 1 && j == matrix.length) {
+			// if the matrix is safe
+			if (grid.validate()) {
+				// print and stop
+				return true;
+			}
+
+			// else try other cases
+			return false;
+		}
+
+		// end of a row move to next row
+		if (j == matrix.length) {
+			i++;
+			j = 0;
+		}
+
+		// if the element is non zero keep as it is
+		if (matrix[i][j] != UNASSIGNED)
+			return SolveSudoku(grid, i, j + 1);
+
+		// consider digits 1 to 9
+		for (int num = 0; num < matrix.length; num++) {
+			// assign and call recursively
+			matrix[i][j] = grid.getListOfvalidIntegers().get(num);
+
+			if (SolveSudoku(grid, i, j + 1))
+				return true;
+
+			matrix[i][j] = -1;
+		}
+		return false;
 	}
 
 	public boolean solve(SudokuGrid grid, int assignmentNo) {
@@ -40,19 +78,16 @@ public class BackTrackingSolver extends StdSudokuSolver {
 			if (grid.getSudokuGrid()[row][col] != UNASSIGNED) {
 				vNum = grid.getListOfvalidIntegers().indexOf(grid.getSudokuGrid()[row][col]);
 			}
-			for (int v = vNum + 1; v < grid.getListOfvalidIntegers().size();v++) {
+			for (int v = vNum + 1; v < grid.getListOfvalidIntegers().size(); v++) {
 				grid.getSudokuGrid()[row][col] = grid.getListOfvalidIntegers().get(v);
 				if (grid.validate()) {
 					solve(grid, ++assignmentNo);
 					result = true;
 					break;
 				} else {
-//					System.out.println("validated with " + row + col + grid.getListOfvalidIntegers().get(v));
-
 					grid.getSudokuGrid()[row][col] = UNASSIGNED;
 					result = false;
 					continue;
-					
 				}
 			}
 			if (grid.getSudokuGrid()[row][col] == UNASSIGNED) {
