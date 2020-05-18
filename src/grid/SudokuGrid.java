@@ -29,8 +29,20 @@ public abstract class SudokuGrid {
 		this.listOfvalidIntegers = new ArrayList<Integer>();
 
 		// TODO: any necessary initialisation at the constructor
-	} 
-	
+	}
+
+	public int[][] getSudokuGrid() {
+		return sudokuGrid;
+	}
+
+	public int getSudokuGridLength() {
+		return sudokuGridLength;
+	}
+
+	public List<Integer> getListOfvalidIntegers() {
+		return listOfvalidIntegers;
+	}
+
 	public void readFirstTwoLines(BufferedReader br) {
 		try {
 			String firstLine = br.readLine();
