@@ -21,11 +21,13 @@ public class StdSudokuGrid extends SudokuGrid {
 	// TODO: Add your own attributes
 	private int[][] sudokuGrid;
 	private int sudokuGridLength;
+	private List<Integer> listOfvalidIntegers;
 
 	public StdSudokuGrid() {
 		super();
 		this.sudokuGrid = null;
 		this.sudokuGridLength = 0;
+		this.listOfvalidIntegers=new ArrayList<Integer>();
 		// TODO: any necessary initialisation at the constructor
 	} // end of StdSudokuGrid()
 
@@ -39,12 +41,14 @@ public class StdSudokuGrid extends SudokuGrid {
 			String firstLine = br.readLine();
 			this.sudokuGridLength = Integer.parseInt(firstLine);
 			this.sudokuGrid = new int[this.sudokuGridLength][this.sudokuGridLength];
-
+			
+			for (int[] row: this.sudokuGrid)
+			    Arrays.fill(row, -1);
+			
 			String secondLine = br.readLine();
 			String[] splitSecondLine = secondLine.split(" ");
-			List<Integer> listOfvalidIntegers = new ArrayList<Integer>();
 			for (String num : splitSecondLine) {
-				listOfvalidIntegers.add(Integer.parseInt(num));
+				this.listOfvalidIntegers.add(Integer.parseInt(num));
 			}
 
 			while ((line = br.readLine()) != null) {
