@@ -4,6 +4,9 @@
 package grid;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -17,10 +20,12 @@ import java.util.Scanner;
 public class StdSudokuGrid extends SudokuGrid {
 	// TODO: Add your own attributes
 	private int[][] sudokuGrid;
+	private int sudokuGridLength;
 
 	public StdSudokuGrid() {
 		super();
 		this.sudokuGrid = null;
+		this.sudokuGridLength = 0;
 		// TODO: any necessary initialisation at the constructor
 	} // end of StdSudokuGrid()
 
@@ -30,35 +35,51 @@ public class StdSudokuGrid extends SudokuGrid {
 	public void initGrid(String filename) throws FileNotFoundException, IOException {
 		// TODO
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-		    String line;
-		    while ((line = br.readLine()) != null) {
-		       // process the line.
-		    	System.out.println(line);
-		    }
-		}
-		catch (Exception e) {
+			String line;
+			String firstLine = br.readLine();
+			this.sudokuGridLength = Integer.parseInt(firstLine);
+			this.sudokuGrid = new int[this.sudokuGridLength][this.sudokuGridLength];
+
+			String secondLine = br.readLine();
+			String[] splitSecondLine = secondLine.split(" ");
+			List<Integer> listOfvalidIntegers = new ArrayList<Integer>();
+			for (String num : splitSecondLine) {
+				listOfvalidIntegers.add(Integer.parseInt(num));
+			}
+
+			while ((line = br.readLine()) != null) {
+				String[] coordValue = line.split(" ");
+				String[] coord = coordValue[0].split(",");
+				this.sudokuGrid[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = Integer
+						.parseInt(coordValue[1]);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		try (Scanner sc = new Scanner(new FileReader(filename))) {
-//			while (sc.hasNextLine()) {
-//				System.out.println(sc.nextLine());
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	} // end of initBoard()
 
 	@Override
 	public void outputGrid(String filename) throws FileNotFoundException, IOException {
 		// TODO
+		try (PrintWriter writer = new PrintWriter(new File(filename))) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < this.sudokuGridLength; i++) {
+				for (int j = 0; j < this.sudokuGridLength; j++) {
+					sb.append(this.sudokuGrid[i][j]);
+					sb.append(",");
+				}
+				sb.append("\n");
+				writer.write(sb.toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	} // end of outputBoard()
 
 	@Override
 	public String toString() {
 		// TODO
-
-		// placeholder
-		return String.valueOf("");
+		return Arrays.deepToString(this.sudokuGrid);
 	} // end of toString()
 
 	@Override
