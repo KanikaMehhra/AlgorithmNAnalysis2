@@ -5,6 +5,13 @@
  package grid;
 
  import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -62,4 +69,12 @@ public abstract class SudokuGrid
      */
     public abstract boolean validate();
 
+    /**
+     * Checks and validates whether the current list satisfies the constraint of unique values
+     * of the game in question (either standard or Killer Sudoku).  Override to
+     * implement game specific checking.
+     *
+     * @return True if list satisfies the unique value constraint of the game in question.
+     */
+ 
 } // end of abstract class SudokuGrid
