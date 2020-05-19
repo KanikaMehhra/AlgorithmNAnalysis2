@@ -59,7 +59,6 @@ public class RmitSudoku
         if (args.length > 4) {
             solvedGridOutFilename = args[4];
         }
-
         //
         // Construct solver and load grid.
         //
