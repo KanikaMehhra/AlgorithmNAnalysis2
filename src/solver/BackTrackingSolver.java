@@ -32,17 +32,17 @@ public class BackTrackingSolver extends StdSudokuSolver {
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
 		this.matrix = grid.getSudokuGrid();
-		return youtube();
+		return recursiveSolve();
 	}
 
-	public boolean youtube() {
+	public boolean recursiveSolve() {
 		for (int row = 0; row < this.size; row++) {
 			for (int col = 0; col < this.size; col++) {
 				if (this.matrix[row][col] == UNASSIGNED) {
 					for (int number = 0; number < this.size; number++) {
 						if (isValidCommon(row, col, this.acceptedNumbers.get(number))) {
 							matrix[row][col] = this.acceptedNumbers.get(number);
-							if (youtube()) {
+							if (recursiveSolve()) {
 								return true;
 							} else {
 								this.matrix[row][col] = UNASSIGNED;
