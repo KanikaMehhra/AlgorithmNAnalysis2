@@ -16,26 +16,22 @@ import grid.SudokuGrid;
  * Backtracking solver for standard Sudoku.
  */
 public class BackTrackingSolver extends StdSudokuSolver {
-	// TODO: Add attributes as needed.
 	private static final int UNASSIGNED = -1;
 	private int[][] matrix;
 	private int size;
-	private SudokuGrid grid;
 	private List<Integer> acceptedNumbers;
 
 	public BackTrackingSolver() {
 		this.matrix = null;
 		this.size = 0;
 		this.acceptedNumbers = new ArrayList<Integer>();
-		this.grid = null;
 	} // end of BackTrackingSolver()
 
 	@Override
 	public boolean solve(SudokuGrid grid) {
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		this.grid = grid;
-		this.matrix = this.grid.getSudokuGrid();
+		this.matrix = grid.getSudokuGrid();
 		return youtube();
 	}
 
