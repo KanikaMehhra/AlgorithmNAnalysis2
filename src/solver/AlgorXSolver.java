@@ -81,32 +81,15 @@ public class AlgorXSolver extends StdSudokuSolver {
 		return false;
 	}
 
-	private void cover(int[][] grid) {
-		int index = 0;
-		for (int row = 0; row < this.size; row++) {
-			for (int col = 0; col < this.size; col++) {
-				int value = grid[row][col];
+	private void cover(int bigRow, int cellConstraintColumnToBeCovered, int rowConstraintColumnToBeCovered,
+			int colConstraintColumnToBeCovered, int boxConstraintColumnToBeCovered) {
 
-				if (value != UNASSIGNED) {
-					for (int num = 0; num < this.size; num++) {
-						if (this.acceptedNumbers.get(num) == value) {
-							Arrays.fill(this.matrix[getIndexFromCoverMatrix(row, col, num)], 0);
-							int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
-							int rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num);
-							int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
-							int boxConstraintColumnToBeCovered = getBoxConstraintColumn(row, col, num, index);
-							for (int i = 0; i < this.matrix.length; i++) {
-								this.matrix[i][cellConstraintColumnToBeCovered] = 0;
-								this.matrix[i][rowConstraintColumnToBeCovered] = 0;
-								this.matrix[i][colConstraintColumnToBeCovered] = 0;
-								this.matrix[i][boxConstraintColumnToBeCovered] = 0;
-							}
-
-						}
-					}
-				}
-				index++;
-			}
+		Arrays.fill(this.matrix[bigRow], 0);
+		for (int i = 0; i < this.matrix.length; i++) {
+			this.matrix[i][cellConstraintColumnToBeCovered] = 0;
+			this.matrix[i][rowConstraintColumnToBeCovered] = 0;
+			this.matrix[i][colConstraintColumnToBeCovered] = 0;
+			this.matrix[i][boxConstraintColumnToBeCovered] = 0;
 		}
 
 	}
@@ -186,7 +169,41 @@ public class AlgorXSolver extends StdSudokuSolver {
 
 	private void createCoverMatrix(int[][] grid) {
 		this.matrix = transformSudokuGridToCoverMatrix();
-		cover(grid);
+		// cover(grid);
+		int index = 0;
+		for (int row = 0; row < this.size; row++) {
+			for (int col = 0; col < this.size; col++) {
+				int value = grid[row][col];
+
+				if (value != UNASSIGNED) {
+					for (int num = 0; num < this.size; num++) {
+						if (this.acceptedNumbers.get(num) == value) {
+							int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
+							int rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num);
+							int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
+							int boxConstraintColumnToBeCovered = getBoxConstraintColumn(row, col, num, index);
+							int bigRow = getIndexFromCoverMatrix(row, col, num);
+							cover(bigRow, cellConstraintColumnToBeCovered, rowConstraintColumnToBeCovered,
+									colConstraintColumnToBeCovered, boxConstraintColumnToBeCovered);
+							// Arrays.fill(this.matrix[getIndexFromCoverMatrix(row, col, num)], 0);
+							// int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
+							// int rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num);
+							// int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
+							// int boxConstraintColumnToBeCovered = getBoxConstraintColumn(row, col, num,
+							// index);
+							// for (int i = 0; i < this.matrix.length; i++) {
+							// this.matrix[i][cellConstraintColumnToBeCovered] = 0;
+							// this.matrix[i][rowConstraintColumnToBeCovered] = 0;
+							// this.matrix[i][colConstraintColumnToBeCovered] = 0;
+							// this.matrix[i][boxConstraintColumnToBeCovered] = 0;
+							// }
+
+						}
+					}
+				}
+				index++;
+			}
+		}
 		/*
 		 * int index = 0; for (int row = 0; row < this.size; row++) { for (int col = 0;
 		 * col < this.size; col++) { int value = grid[row][col];
