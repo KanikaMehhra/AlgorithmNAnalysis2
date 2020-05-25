@@ -47,9 +47,23 @@ public class AlgorXSolver extends StdSudokuSolver {
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
 		this.smallGridSize = (int) Math.sqrt(this.size);
 		createCoverMatrix(grid.getSudokuGrid());
-		System.out.println(recursiveSolve());
+		if (recursiveSolve()) {
+			fillGridWithSolution(grid.getSudokuGrid());
+			return true;
+		}
 		return false;
 	} // end of solve()
+
+	private void fillGridWithSolution(int[][] grid) {
+		System.out.println(this.solutionRows);
+		for (int solRow : this.solutionRows) {
+			String[] splitSolRow = this.rowSolMap.get(solRow).split(",");
+			int row = Integer.parseInt(splitSolRow[0]);
+			int col = Integer.parseInt(splitSolRow[1]);
+			int indexValue = Integer.parseInt(splitSolRow[2]);
+			grid[row][col] = this.acceptedNumbers.get(indexValue);
+		}
+	}
 
 	private boolean recursiveSolve() {
 		boolean result = true;
