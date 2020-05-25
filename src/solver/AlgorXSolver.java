@@ -68,7 +68,7 @@ public class AlgorXSolver extends StdSudokuSolver {
 
 		Map<Integer, Integer> colValueMap = new TreeMap<Integer, Integer>();
 
-		for (int j = 0; j < this.matrix.length; j++) {
+		for (int j = 0; j < this.matrix[0].length; j++) {
 			if (!this.colsCovered.contains(j)) {
 				int colMinValue = 0;
 				for (int i = 0; i < this.matrix.length; i++) {
