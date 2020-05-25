@@ -112,14 +112,18 @@ public class AlgorXSolver extends StdSudokuSolver {
 			int col = Integer.parseInt(splitValue[1]);
 			int num = Integer.parseInt(splitValue[2]);
 			int index = -1;
+			boolean flag = false;
 
-			// if()
 			for (int indexI = 0; indexI < this.size; indexI++) {
 				for (int indexJ = 0; indexJ < this.size; indexJ++) {
 					++index;
-					if (indexI == row && indexJ == col)
+					if (indexI == row && indexJ == col) {
+						flag = true;
 						break;
+					}
 				}
+				if (flag)
+					break;
 			}
 
 			int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
