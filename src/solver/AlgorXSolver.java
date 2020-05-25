@@ -8,9 +8,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import grid.SudokuGrid;
@@ -28,7 +30,6 @@ public class AlgorXSolver extends StdSudokuSolver {
 	private List<Integer> solutionRows;
 	private Map<Integer, String> rowSolMap;
 	private List<Integer> colsCovered;
-	// private int[][] originalMatrix
 
 	public AlgorXSolver() {
 		this.matrix = null;
@@ -38,17 +39,6 @@ public class AlgorXSolver extends StdSudokuSolver {
 		this.solutionRows = new ArrayList<Integer>();
 		this.rowSolMap = new HashMap<Integer, String>();
 		this.colsCovered = new ArrayList<Integer>();
-
-		int value = 0;
-		for (int row = 0; row < this.size; row++) {
-			for (int col = 0; col < this.size; col++) {
-				for (int num = 0; num < this.size; num++) {
-					String key = "" + row + "," + col + "," + num;
-					this.rowSolMap.put(value++, key);
-				}
-			}
-		}
-
 	} // end of AlgorXSolver()
 
 	@Override
@@ -58,9 +48,6 @@ public class AlgorXSolver extends StdSudokuSolver {
 		this.smallGridSize = (int) Math.sqrt(this.size);
 		createCoverMatrix(grid.getSudokuGrid());
 		System.out.println(recursiveSolve());
-
-		// List<Integer> emptyList = new ArrayList<Integer>();
-
 		return false;
 	} // end of solve()
 
@@ -79,8 +66,7 @@ public class AlgorXSolver extends StdSudokuSolver {
 			return true;
 		}
 
-		// int maxConstraintColValue = 0;
-		List<Integer> minConstraintColValues = new ArrayList<Integer>();
+		Map<Integer, Integer> colValueMap = new TreeMap<Integer, Integer>();
 
 		for (int j = 0; j < this.matrix.length; j++) {
 			if (!this.colsCovered.contains(j)) {
@@ -88,41 +74,34 @@ public class AlgorXSolver extends StdSudokuSolver {
 				for (int i = 0; i < this.matrix.length; i++) {
 					colMinValue += this.matrix[i][j];
 				}
-				minConstraintColValues.add(colMinValue);
+				if (colMinValue == 0)
+					return false;
+				colValueMap.put(j, colMinValue);
+			}
+		}
+		int minColConstraint = 0;
+		int minColValue = 0;
+		Iterator<Integer> iterator = colValueMap.keySet().iterator();
+		if (iterator.hasNext()) {
+			int next = iterator.next();
+			minColValue = colValueMap.get(next);
+			minColConstraint = next;
+		}
+
+		while (iterator.hasNext()) {
+			int next = iterator.next();
+			if (colValueMap.get(next) < minColValue) {
+				minColConstraint = next;
+				minColValue = colValueMap.get(next);
 			}
 		}
 
-		int minConstraintCol = minConstraintColValues.indexOf(Collections.min(minConstraintColValues));
-		if (minConstraintColValues.get(minConstraintCol) == 0)
-			return false;
 		List<Integer> suspectedSolRows = new ArrayList<Integer>();
-		// if (minConstraintColValues.get(minConstraintCol) != 0) {
-		// int foundFirstSolInstance = 0;
+
 		for (int outerRow = 0; outerRow < this.matrix.length; outerRow++) {
-			if (this.matrix[outerRow][minConstraintCol] == 1) {
+			if (this.matrix[outerRow][minColConstraint] == 1) {
 				suspectedSolRows.add(outerRow);
 				Arrays.fill(this.matrix[outerRow], 0);
-
-				/*
-				 * String[] splitValue = this.rowSolMap.get(outerRow).split(","); int row =
-				 * Integer.parseInt(splitValue[0]); int col = Integer.parseInt(splitValue[1]);
-				 * int num = Integer.parseInt(splitValue[2]); int index = -1;
-				 * 
-				 * for (int i = 0; i < row; i++) { for (int j = 0; j < this.size; j++) {
-				 * ++index; } }
-				 * 
-				 * for (int k = 0; k <= row; k++) { ++index; }
-				 * 
-				 * int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col); int
-				 * rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num); int
-				 * colConstraintColumnToBeCovered = getColConstraintColumn(col, num); int
-				 * boxConstraintColumnToBeCovered = getBoxConstraintColumn(row, col, num,
-				 * index);
-				 * 
-				 * cover(outerRow, cellConstraintColumnToBeCovered,
-				 * rowConstraintColumnToBeCovered, colConstraintColumnToBeCovered,
-				 * boxConstraintColumnToBeCovered);
-				 */
 			}
 		}
 
@@ -134,15 +113,15 @@ public class AlgorXSolver extends StdSudokuSolver {
 			int num = Integer.parseInt(splitValue[2]);
 			int index = -1;
 
-			for (int in = 0; in < row; in++) {
-				for (int j = 0; j < this.size; j++) {
+			// if()
+			for (int indexI = 0; indexI < this.size; indexI++) {
+				for (int indexJ = 0; indexJ < this.size; indexJ++) {
 					++index;
+					if (indexI == row && indexJ == col)
+						break;
 				}
 			}
 
-			for (int k = 0; k <= row; k++) {
-				++index;
-			}
 			int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
 			int rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num);
 			int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
@@ -150,24 +129,23 @@ public class AlgorXSolver extends StdSudokuSolver {
 			int[][] previousMatrix = this.matrix;
 			cover(suspectedSolRows.get(i), cellConstraintColumnToBeCovered, rowConstraintColumnToBeCovered,
 					colConstraintColumnToBeCovered, boxConstraintColumnToBeCovered);
+			this.colsCovered.add(cellConstraintColumnToBeCovered);
+			this.colsCovered.add(rowConstraintColumnToBeCovered);
+			this.colsCovered.add(colConstraintColumnToBeCovered);
+			this.colsCovered.add(boxConstraintColumnToBeCovered);
 			if (recursiveSolve()) {
 				result = true;
-				this.colsCovered.add(cellConstraintColumnToBeCovered);
-				this.colsCovered.add(rowConstraintColumnToBeCovered);
-				this.colsCovered.add(colConstraintColumnToBeCovered);
-				this.colsCovered.add(boxConstraintColumnToBeCovered);
 				break;
 			} else {
 				this.matrix = previousMatrix;
+				this.colsCovered.remove(this.solutionRows.size() - 1);
+				this.colsCovered.remove(this.solutionRows.size() - 1);
+				this.colsCovered.remove(this.solutionRows.size() - 1);
+				this.colsCovered.remove(this.solutionRows.size() - 1);
 				this.solutionRows.remove(this.solutionRows.size() - 1);
 				result = false;
 			}
 		}
-		// }
-		// else {
-		//
-		// }
-
 		return result;
 	}
 
@@ -176,15 +154,12 @@ public class AlgorXSolver extends StdSudokuSolver {
 		Arrays.fill(this.matrix[bigRow], 0);
 		for (int i = 0; i < this.matrix.length; i++) {
 			if (this.matrix[i][cellConstraintColumnToBeCovered] == 1) {
-				// this.matrix[i][cellConstraintColumnToBeCovered] = 0;
 				Arrays.fill(this.matrix[i], 0);
 			}
 			if (this.matrix[i][rowConstraintColumnToBeCovered] == 1) {
-				// this.matrix[i][rowConstraintColumnToBeCovered] = 0;
 				Arrays.fill(this.matrix[i], 0);
 			}
 			if (this.matrix[i][colConstraintColumnToBeCovered] == 1) {
-				// this.matrix[i][colConstraintColumnToBeCovered] = 0;
 				Arrays.fill(this.matrix[i], 0);
 			}
 			if (this.matrix[i][boxConstraintColumnToBeCovered] == 1) {
@@ -275,6 +250,17 @@ public class AlgorXSolver extends StdSudokuSolver {
 	private void createCoverMatrix(int[][] grid) {
 		this.matrix = transformSudokuGridToCoverMatrix();
 		// cover(grid);
+
+		int v = 0;
+		for (int row = 0; row < this.size; row++) {
+			for (int col = 0; col < this.size; col++) {
+				for (int num = 0; num < this.size; num++) {
+					String key = "" + row + "," + col + "," + num;
+					this.rowSolMap.put(v++, key);
+				}
+			}
+		}
+
 		int index = 0;
 		for (int row = 0; row < this.size; row++) {
 			for (int col = 0; col < this.size; col++) {
@@ -300,9 +286,9 @@ public class AlgorXSolver extends StdSudokuSolver {
 				index++;
 			}
 		}
-		for (int[] row : this.matrix) {
-			System.out.println(Arrays.toString(row));
-		}
+		// for (int[] row : this.matrix) {
+		// System.out.println(Arrays.toString(row));
+		// }
 	}
 
 	private int getCellConstraintColumn(int row, int col) {
