@@ -54,6 +54,7 @@ public class AlgorXSolver extends StdSudokuSolver {
 		return false;
 	} // end of solve()
 
+	// converts the solution rows to fill the sudoku.
 	private void fillGridWithSolution(int[][] grid) {
 		for (int solRow : this.solutionRows) {
 			String[] splitSolRow = this.rowSolMap.get(solRow).split(",");
@@ -74,13 +75,13 @@ public class AlgorXSolver extends StdSudokuSolver {
 				}
 			}
 		}
-
+		// if all the cells in the cover matrix are 0, then the solution is found.
 		if (result) {
 			return true;
 		}
 
 		Map<Integer, Integer> colValueMap = new TreeMap<Integer, Integer>();
-
+		// map the cols with the number of cells having value 1.
 		for (int j = 0; j < this.matrix[0].length; j++) {
 			if (!this.colsCovered.contains(j)) {
 				int colMinValue = 0;
@@ -95,12 +96,14 @@ public class AlgorXSolver extends StdSudokuSolver {
 		int minColConstraint = 0;
 		int minColValue = 0;
 		Iterator<Integer> iterator = colValueMap.keySet().iterator();
+		// initialise the column to be considered as the first column of the map created
+		// above.
 		if (iterator.hasNext()) {
 			int next = iterator.next();
 			minColValue = colValueMap.get(next);
 			minColConstraint = next;
 		}
-
+		// iterate over the map to get the column with the least number of 1s.
 		while (iterator.hasNext()) {
 			int next = iterator.next();
 			if (colValueMap.get(next) < minColValue) {
@@ -110,14 +113,16 @@ public class AlgorXSolver extends StdSudokuSolver {
 		}
 
 		List<Integer> suspectedSolRows = new ArrayList<Integer>();
-
+		// select the rows that satisfy the column constraint, which is selected in
+		// above process and cover them.
 		for (int outerRow = 0; outerRow < this.matrix.length; outerRow++) {
 			if (this.matrix[outerRow][minColConstraint] == 1) {
 				suspectedSolRows.add(outerRow);
 				Arrays.fill(this.matrix[outerRow], 0);
 			}
 		}
-
+		// here we perform the covering/uncovering nd backtracking to get the solution
+		// rows.
 		for (int i = 0; i < suspectedSolRows.size(); i++) {
 			this.solutionRows.add(suspectedSolRows.get(i));
 			String[] splitValue = this.rowSolMap.get(suspectedSolRows.get(i)).split(",");
@@ -126,7 +131,8 @@ public class AlgorXSolver extends StdSudokuSolver {
 			int num = Integer.parseInt(splitValue[2]);
 			int index = -1;
 			boolean flag = false;
-
+			// calculate the index of the cell which corresponds to the calculated row and
+			// column in the actual sudoku grid.
 			for (int indexI = 0; indexI < this.size; indexI++) {
 				for (int indexJ = 0; indexJ < this.size; indexJ++) {
 					++index;
@@ -138,7 +144,8 @@ public class AlgorXSolver extends StdSudokuSolver {
 				if (flag)
 					break;
 			}
-
+			// calculate the columns that satisfy the row selected s the solution for the
+			// selected column constraint.
 			int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
 			int rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num);
 			int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
@@ -149,7 +156,8 @@ public class AlgorXSolver extends StdSudokuSolver {
 			if (recursiveSolve()) {
 				result = true;
 				break;
-			} else {
+			} else {// backtrack and choose the next row from the suspectedRows as a solution to the
+					// selected column constraint.
 				this.matrix = previousMatrix;
 				this.colsCovered.remove(this.solutionRows.size() - 1);
 				this.colsCovered.remove(this.solutionRows.size() - 1);
@@ -267,7 +275,8 @@ public class AlgorXSolver extends StdSudokuSolver {
 				}
 			}
 		}
-
+		// cover the rows and columns associated with the given hints in the initial
+		// sudoku grid.
 		int index = 0;
 		for (int row = 0; row < this.size; row++) {
 			for (int col = 0; col < this.size; col++) {
