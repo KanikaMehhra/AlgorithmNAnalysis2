@@ -158,6 +158,7 @@ public class AlgorXSolver extends StdSudokuSolver {
 				break;
 			} else {// backtrack and choose the next row from the suspectedRows as a solution to the
 					// selected column constraint.
+				// uncover
 				this.matrix = previousMatrix;
 				this.colsCovered.remove(this.solutionRows.size() - 1);
 				this.colsCovered.remove(this.solutionRows.size() - 1);
