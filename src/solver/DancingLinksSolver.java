@@ -26,6 +26,8 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	protected List<DancingNode> answer;
 	protected List<DancingNode> result;
 	private List<Integer> colsCovered;
+	private int size;
+	private List<Integer> listOfAcceptedIntegers;
 
 	public DancingLinksSolver() {
 		// TODO: any initialization you want to implement.
@@ -36,12 +38,16 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.answer = new ArrayList<DancingNode>();
 		this.result = new ArrayList<DancingNode>();
 		this.colsCovered = new ArrayList<Integer>();
+		this.listOfAcceptedIntegers=new ArrayList<Integer>();
+		this.size = 0;
 
 	} // end of DancingLinksSolver()
 
 	@Override
 	public boolean solve(SudokuGrid grid) {
 		// TODO: your implementation of the dancing links solver for Killer Sudoku.
+		this.size = grid.getSudokuGridLength();
+		this.listOfAcceptedIntegers=grid.getListOfvalidIntegers();
 		ExactCoverTransformation transform = new ExactCoverTransformation(grid);
 		this.coverMatrix = transform.createCoverMatrix(grid.getSudokuGrid());
 		this.links = new DancingLinks(this.coverMatrix);
@@ -50,10 +56,47 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		// for (int[] row : this.coverMatrix) {
 		// System.out.println(Arrays.toString(row));
 		// }
-		System.out.println(recursiveSolve());
+		// System.out.println(recursiveSolve());
+		if (recursiveSolve()) {
+//			convertDLXListToGrid(grid.getSudokuGrid());
+			// for (DancingNode node : this.answer) {
+			// // System.out.println(node.column.);
+			// }
+			// System.out.println(this.answer.size());
+		}
 		return false;
 		// return recursiveSolve();
 	} // end of solve()
+
+//	private void convertDLXListToGrid(int[][] originalGrid) {
+//		// int[][] result = new int[this.size][this.size];
+//
+//		for (DancingNode n : answer) {
+//			DancingNode rcNode = n;
+//			int min = rcNode.column.number;
+//
+//			for (DancingNode tmp = n.right; tmp != n; tmp = tmp.right) {
+//				int val = tmp.column.number;
+//
+//				if (val < min) {
+//					min = val;
+//					rcNode = tmp;
+//				}
+//			}
+//
+//			// we get line and column
+//			int ans1 = rcNode.column.number;
+//			int ans2 = rcNode.right.column.number;
+//			int r = ans1 / this.size;
+//			int c = ans1 % this.size;
+//			// and the affected value
+//			int num = (ans2 % this.size) + 1;
+//			// we affect that on the result grid
+//			originalGrid[r][c] = this.listOfAcceptedIntegers.get(num);
+//		}
+//
+//		// return result;
+//	}
 
 	private boolean selectColumnNodeHeuristic() {
 		// this.minColConstraint = this.links.columnNodes.get(0);
@@ -63,8 +106,8 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.minColConstraint = null;
 		for (ColumnNode columnNode : this.links.columnNodes) {
 			if (!this.colsCovered.contains(columnNode.number)) {
-				minColValue=columnNode.size;
-				this.minColConstraint=columnNode;
+				minColValue = columnNode.size;
+				this.minColConstraint = columnNode;
 				break;
 			}
 		}
@@ -78,6 +121,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 					this.minColConstraint = columnNode;
 				}
 		}
+
 		return true;
 	}
 
@@ -86,6 +130,10 @@ public class DancingLinksSolver extends StdSudokuSolver {
 
 		if (this.masterColumn.right == this.masterColumn) {
 			this.result = this.answer;
+			return true;
+		}
+
+		if (this.colsCovered.size() == this.coverMatrix[0].length) {
 			return true;
 		}
 

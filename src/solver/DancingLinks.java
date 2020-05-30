@@ -118,10 +118,11 @@ public class DancingLinks {
 		this.masterColumn = new ColumnNode(-1);
 		ColumnNode prevColumnNode = this.masterColumn;
 		ColumnNode curColumn=null;
-		for (int j = 0; j < this.numberOfColumnNodes-1 ; j++) {
+		for (int j = 0; j < this.numberOfColumnNodes ; j++) {
 			curColumn = new ColumnNode(j);
 			curColumn.left = prevColumnNode;
-			curColumn.right = new ColumnNode(j + 1);
+			prevColumnNode.right=curColumn;
+//			curColumn.right = new ColumnNode(j + 1);
 			this.columnNodes.add(curColumn);
 //			this.masterColumn = (ColumnNode) this.masterColumn.linkHorizontally(columnNode);
 			prevColumnNode = curColumn;
