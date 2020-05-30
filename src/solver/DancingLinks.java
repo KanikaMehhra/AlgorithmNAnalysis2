@@ -13,7 +13,7 @@ public class DancingLinks {
 		this.numberOfColumnNodes = exactCover[0].length;
 		this.columnNodes = new ArrayList<ColumnNode>();
 		createDancingLinks(exactCover);
-		System.out.println(this.masterColumn);
+//		System.out.println(this.masterColumn);
 	}
 	
 	//creates the dancing links and sets the master column.

@@ -25,6 +25,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	private ColumnNode minColConstraint;
 	protected List<DancingNode> answer;
 	protected List<DancingNode> result;
+	private List<Integer> colsCovered;
 
 	public DancingLinksSolver() {
 		// TODO: any initialization you want to implement.
@@ -32,8 +33,9 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.masterColumn = null;
 		this.links = null;
 		this.minColConstraint = null;
-		this.answer = null;
-		this.result = null;
+		this.answer = new ArrayList<DancingNode>();
+		this.result = new ArrayList<DancingNode>();
+		this.colsCovered = new ArrayList<Integer>();
 
 	} // end of DancingLinksSolver()
 
@@ -44,7 +46,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.coverMatrix = transform.createCoverMatrix(grid.getSudokuGrid());
 		this.links = new DancingLinks(this.coverMatrix);
 		this.masterColumn = this.links.masterColumn;
-
+		this.colsCovered = transform.colsCovered;
 		// for (int[] row : this.coverMatrix) {
 		// System.out.println(Arrays.toString(row));
 		// }
@@ -57,16 +59,24 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		// this.minColConstraint = this.links.columnNodes.get(0);
 		// int minColValue = minColConstraint.size;
 
-		int minColValue = 1;
+		int minColValue = 0;
 		this.minColConstraint = null;
+		for (ColumnNode columnNode : this.links.columnNodes) {
+			if (!this.colsCovered.contains(columnNode.number)) {
+				minColValue=columnNode.size;
+				this.minColConstraint=columnNode;
+				break;
+			}
+		}
 
 		for (ColumnNode columnNode : this.links.columnNodes) {
-			if (columnNode.size == 0)
-				return false;
-			if (columnNode.size < minColValue) {
-				minColValue = columnNode.size;
-				this.minColConstraint = columnNode;
-			}
+			if (!this.colsCovered.contains(columnNode.number))
+				if (columnNode.size == 0)
+					return false;
+				else if (columnNode.size < minColValue) {
+					minColValue = columnNode.size;
+					this.minColConstraint = columnNode;
+				}
 		}
 		return true;
 	}
@@ -84,12 +94,14 @@ public class DancingLinksSolver extends StdSudokuSolver {
 			return false;
 
 		this.minColConstraint.cover();
+		this.colsCovered.add(this.minColConstraint.number);
 
 		for (DancingNode dancingNode = this.minColConstraint.down; dancingNode != this.minColConstraint; dancingNode = dancingNode.down) {
 			this.answer.add(dancingNode);
 
 			for (DancingNode dancingNodeInternal = dancingNode.right; dancingNodeInternal != dancingNode; dancingNodeInternal = dancingNodeInternal.right) {
 				dancingNodeInternal.column.cover();
+				this.colsCovered.add(dancingNodeInternal.column.number);
 			}
 
 			if (recursiveSolve()) {
@@ -101,10 +113,12 @@ public class DancingLinksSolver extends StdSudokuSolver {
 				this.minColConstraint = dancingNode.column;
 				for (DancingNode dancingNodeRecover = dancingNode.left; dancingNodeRecover != dancingNode; dancingNodeRecover = dancingNodeRecover.left) {
 					dancingNodeRecover.column.uncover();
+					this.colsCovered.remove(dancingNodeRecover.column.number);
 				}
 			}
 		}
 		this.minColConstraint.uncover();
+		this.colsCovered.remove(this.minColConstraint.number);
 		return result;
 	}
 

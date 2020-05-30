@@ -1,6 +1,8 @@
 package solver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import grid.SudokuGrid;
@@ -12,14 +14,17 @@ public class ExactCoverTransformation {
 	private int[][] matrix;
 	private static final int UNASSIGNED = -1;
 	private List<Integer> acceptedNumbers;
-	
+	protected List<Integer> colsCovered;
+
 	public ExactCoverTransformation(SudokuGrid grid) {
 		this.size = grid.getSudokuGridLength();
 		this.smallGridSize = (int) Math.sqrt(this.size);
-		this.matrix=null;
+		this.matrix = null;
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
+		this.colsCovered = new ArrayList<Integer>();
+
 	}
-	
+
 	private int getIndexFromCoverMatrix(int row, int col, int num) {
 		return (row) * this.size * this.size + (col) * this.size + (num);
 	}
@@ -89,7 +94,7 @@ public class ExactCoverTransformation {
 		boxConstraintsCreation(coverMatrix, head);
 		return coverMatrix;
 	}
-	
+
 	protected int[][] createCoverMatrix(int[][] grid) {
 		this.matrix = transformSudokuGridToCoverMatrix();
 		int v = 0;
@@ -110,15 +115,21 @@ public class ExactCoverTransformation {
 							int bigRow = getIndexFromCoverMatrix(row, col, num);
 							cover(bigRow, cellConstraintColumnToBeCovered, rowConstraintColumnToBeCovered,
 									colConstraintColumnToBeCovered, boxConstraintColumnToBeCovered);
+							
 						}
 					}
 				}
 				index++;
 			}
 		}
+//		Collections.sort(this.colsCovered);
+//		Collections.reverse(this.colsCovered);
+//		for(int removeColumn: this.colsCovered) {
+//			removeCol(removeColumn);
+//		}
 		return this.matrix;
 	}
-	
+
 	private int getCellConstraintColumn(int row, int col) {
 		return row * this.size + col;
 	}
@@ -149,7 +160,24 @@ public class ExactCoverTransformation {
 
 		return 3 * this.size * this.size + box * this.size + num;
 	}
-	
+
+	private void removeCol(int colRemove) {
+		int rows = this.matrix.length;
+		int cols = this.matrix[0].length;
+
+		int[][] newArray = new int[rows][cols - 1]; // new Array will have one column less
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0, currColumn = 0; j < cols; j++) {
+				if (j != colRemove) {
+					newArray[i][currColumn++] = this.matrix[i][j];
+				}
+			}
+		}
+
+		this.matrix = newArray;
+	}
+
 	private void cover(int bigRow, int cellConstraintColumnToBeCovered, int rowConstraintColumnToBeCovered,
 			int colConstraintColumnToBeCovered, int boxConstraintColumnToBeCovered) {
 		Arrays.fill(this.matrix[bigRow], 0);
@@ -168,6 +196,10 @@ public class ExactCoverTransformation {
 
 			}
 		}
+		this.colsCovered.add(cellConstraintColumnToBeCovered);
+		this.colsCovered.add(rowConstraintColumnToBeCovered);
+		this.colsCovered.add(colConstraintColumnToBeCovered);
+		this.colsCovered.add(boxConstraintColumnToBeCovered);
 	}
 
 }
