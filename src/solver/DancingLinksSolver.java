@@ -18,7 +18,6 @@ import grid.SudokuGrid;
  * Dancing links solver for standard Sudoku.
  */
 public class DancingLinksSolver extends StdSudokuSolver {
-	// TODO: Add attributes as needed.
 	private int[][] coverMatrix;
 	private ColumnNode masterColumn;
 	private DancingLinks links;
@@ -30,7 +29,6 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	private List<Integer> listOfAcceptedIntegers;
 
 	public DancingLinksSolver() {
-		// TODO: any initialization you want to implement.
 		this.coverMatrix = null;
 		this.masterColumn = null;
 		this.links = null;
@@ -45,7 +43,6 @@ public class DancingLinksSolver extends StdSudokuSolver {
 
 	@Override
 	public boolean solve(SudokuGrid grid) {
-		// TODO: your implementation of the dancing links solver for Killer Sudoku.
 		this.size = grid.getSudokuGridLength();
 		this.listOfAcceptedIntegers = grid.getListOfvalidIntegers();
 		ExactCoverTransformation transform = new ExactCoverTransformation(grid);
@@ -57,20 +54,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 			fillGridWithSolution(grid.getSudokuGrid());
 			return true;
 		}
-		// for (int[] row : this.coverMatrix) {
-		// System.out.println(Arrays.toString(row));
-		// }
-		// System.out.println(recursiveSolve());
-		// System.out.println(this.answer.size());
-		// // if (recursiveSolve()) {
-		// //// convertDLXListToGrid(grid.getSudokuGrid());
-		// for (DancingNode node : this.answer) {
-		// System.out.println(node.number);
-		// }
-		// // System.out.println(this.answer.size());
-		// }
 		return false;
-		// return recursiveSolve();
 	} // end of solve()
 
 	private void fillGridWithSolution(int[][] grid) {
@@ -90,40 +74,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		}
 	}
 
-	// private void convertDLXListToGrid(int[][] originalGrid) {
-	// // int[][] result = new int[this.size][this.size];
-	//
-	// for (DancingNode n : answer) {
-	// DancingNode rcNode = n;
-	// int min = rcNode.column.number;
-	//
-	// for (DancingNode tmp = n.right; tmp != n; tmp = tmp.right) {
-	// int val = tmp.column.number;
-	//
-	// if (val < min) {
-	// min = val;
-	// rcNode = tmp;
-	// }
-	// }
-	//
-	// // we get line and column
-	// int ans1 = rcNode.column.number;
-	// int ans2 = rcNode.right.column.number;
-	// int r = ans1 / this.size;
-	// int c = ans1 % this.size;
-	// // and the affected value
-	// int num = (ans2 % this.size) + 1;
-	// // we affect that on the result grid
-	// originalGrid[r][c] = this.listOfAcceptedIntegers.get(num);
-	// }
-	//
-	// // return result;
-	// }
-
-	private boolean selectColumnNodeHeuristic() {
-		// this.minColConstraint = this.links.columnNodes.get(0);
-		// int minColValue = minColConstraint.size;
-
+	private boolean selectMinColumnNodeConstraint() {
 		int minColValue = 0;
 		this.minColConstraint = null;
 		for (ColumnNode columnNode : this.links.columnNodes) {
@@ -143,7 +94,6 @@ public class DancingLinksSolver extends StdSudokuSolver {
 					this.minColConstraint = columnNode;
 				}
 		}
-
 		return true;
 	}
 
@@ -159,7 +109,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 			return true;
 		}
 
-		boolean foundColumnNode = selectColumnNodeHeuristic();
+		boolean foundColumnNode = selectMinColumnNodeConstraint();
 		if (!foundColumnNode)
 			return false;
 
@@ -191,41 +141,4 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.colsCovered.remove(this.minColConstraint.number);
 		return result;
 	}
-
-	// private void process(int k) {
-	// if (header.right == header) {
-	// // End of Algorithm X
-	// // Result is copied in a result list
-	// result = new LinkedList<>(answer);
-	// } else {
-	// // we choose column c
-	// ColumnNode c = selectColumnNodeHeuristic();
-	// c.cover();
-	//
-	// for (DancingNode r = c.bottom; r != c; r = r.bottom) {
-	// // We add r line to partial solution
-	// answer.add(r);
-	//
-	// // We cover columns
-	// for (DancingNode j = r.right; j != r; j = j.right) {
-	// j.column.cover();
-	// }
-	//
-	// // recursive call to leverl k + 1
-	// process(k + 1);
-	//
-	// // We go back
-	// r = answer.remove(answer.size() - 1);
-	// c = r.column;
-	//
-	// // We uncover columns
-	// for (DancingNode j = r.left; j != r; j = j.left) {
-	// j.column.uncover();
-	// }
-	// }
-	//
-	// c.uncover();
-	// }
-	// }
-
 } // end of class DancingLinksSolver

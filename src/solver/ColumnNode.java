@@ -2,12 +2,10 @@ package solver;
 
 public class ColumnNode extends DancingNode {
 	protected int size;
-//	protected int number;
 
 	public ColumnNode(int number) {
 		super(number);
 		this.size = 0;
-//		this.number = number;
 		this.column = this;
 	}
 

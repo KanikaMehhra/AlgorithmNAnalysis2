@@ -8,11 +8,11 @@ import java.util.List;
 import grid.SudokuGrid;
 
 public class ExactCoverTransformation {
-	private int size;
-	private static final int CONSTRAINTS = 4;
-	private int smallGridSize;
-	private int[][] matrix;
 	private static final int UNASSIGNED = -1;
+	private static final int CONSTRAINTS = 4;
+	private int[][] matrix;
+	private int size;
+	private int smallGridSize;
 	private List<Integer> acceptedNumbers;
 	protected List<Integer> colsCovered;
 
@@ -97,7 +97,6 @@ public class ExactCoverTransformation {
 
 	protected int[][] createCoverMatrix(int[][] grid) {
 		this.matrix = transformSudokuGridToCoverMatrix();
-		int v = 0;
 		// cover the rows and columns associated with the given hints in the initial
 		// sudoku grid.
 		int index = 0;
@@ -115,18 +114,13 @@ public class ExactCoverTransformation {
 							int bigRow = getIndexFromCoverMatrix(row, col, num);
 							cover(bigRow, cellConstraintColumnToBeCovered, rowConstraintColumnToBeCovered,
 									colConstraintColumnToBeCovered, boxConstraintColumnToBeCovered);
-							
+
 						}
 					}
 				}
 				index++;
 			}
 		}
-//		Collections.sort(this.colsCovered);
-//		Collections.reverse(this.colsCovered);
-//		for(int removeColumn: this.colsCovered) {
-//			removeCol(removeColumn);
-//		}
 		return this.matrix;
 	}
 
@@ -159,23 +153,6 @@ public class ExactCoverTransformation {
 		int box = boxx + hboxes * boxy;
 
 		return 3 * this.size * this.size + box * this.size + num;
-	}
-
-	private void removeCol(int colRemove) {
-		int rows = this.matrix.length;
-		int cols = this.matrix[0].length;
-
-		int[][] newArray = new int[rows][cols - 1]; // new Array will have one column less
-
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0, currColumn = 0; j < cols; j++) {
-				if (j != colRemove) {
-					newArray[i][currColumn++] = this.matrix[i][j];
-				}
-			}
-		}
-
-		this.matrix = newArray;
 	}
 
 	private void cover(int bigRow, int cellConstraintColumnToBeCovered, int rowConstraintColumnToBeCovered,
