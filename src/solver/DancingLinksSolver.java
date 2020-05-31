@@ -38,7 +38,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.answer = new ArrayList<DancingNode>();
 		this.result = new ArrayList<DancingNode>();
 		this.colsCovered = new ArrayList<Integer>();
-		this.listOfAcceptedIntegers=new ArrayList<Integer>();
+		this.listOfAcceptedIntegers = new ArrayList<Integer>();
 		this.size = 0;
 
 	} // end of DancingLinksSolver()
@@ -47,56 +47,78 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	public boolean solve(SudokuGrid grid) {
 		// TODO: your implementation of the dancing links solver for Killer Sudoku.
 		this.size = grid.getSudokuGridLength();
-		this.listOfAcceptedIntegers=grid.getListOfvalidIntegers();
+		this.listOfAcceptedIntegers = grid.getListOfvalidIntegers();
 		ExactCoverTransformation transform = new ExactCoverTransformation(grid);
 		this.coverMatrix = transform.createCoverMatrix(grid.getSudokuGrid());
 		this.links = new DancingLinks(this.coverMatrix);
 		this.masterColumn = this.links.masterColumn;
 		this.colsCovered = transform.colsCovered;
+		if (recursiveSolve()) {
+			fillGridWithSolution(grid.getSudokuGrid());
+			return true;
+		}
 		// for (int[] row : this.coverMatrix) {
 		// System.out.println(Arrays.toString(row));
 		// }
 		// System.out.println(recursiveSolve());
-		if (recursiveSolve()) {
-//			convertDLXListToGrid(grid.getSudokuGrid());
-			// for (DancingNode node : this.answer) {
-			// // System.out.println(node.column.);
-			// }
-			// System.out.println(this.answer.size());
-		}
+		// System.out.println(this.answer.size());
+		// // if (recursiveSolve()) {
+		// //// convertDLXListToGrid(grid.getSudokuGrid());
+		// for (DancingNode node : this.answer) {
+		// System.out.println(node.number);
+		// }
+		// // System.out.println(this.answer.size());
+		// }
 		return false;
 		// return recursiveSolve();
 	} // end of solve()
 
-//	private void convertDLXListToGrid(int[][] originalGrid) {
-//		// int[][] result = new int[this.size][this.size];
-//
-//		for (DancingNode n : answer) {
-//			DancingNode rcNode = n;
-//			int min = rcNode.column.number;
-//
-//			for (DancingNode tmp = n.right; tmp != n; tmp = tmp.right) {
-//				int val = tmp.column.number;
-//
-//				if (val < min) {
-//					min = val;
-//					rcNode = tmp;
-//				}
-//			}
-//
-//			// we get line and column
-//			int ans1 = rcNode.column.number;
-//			int ans2 = rcNode.right.column.number;
-//			int r = ans1 / this.size;
-//			int c = ans1 % this.size;
-//			// and the affected value
-//			int num = (ans2 % this.size) + 1;
-//			// we affect that on the result grid
-//			originalGrid[r][c] = this.listOfAcceptedIntegers.get(num);
-//		}
-//
-//		// return result;
-//	}
+	private void fillGridWithSolution(int[][] grid) {
+		for (DancingNode node : this.answer) {
+			int majorRow = node.number;
+			int rowNumber = majorRow / (this.size * this.size);
+			int colNumber = (majorRow - (rowNumber * this.size * this.size)) / this.size;
+			int valueNumber = -1;
+			if (colNumber != 0) {
+				valueNumber = (majorRow - (rowNumber * this.size * this.size)) % (colNumber * this.size);
+			} else {
+				valueNumber = majorRow - (rowNumber * this.size * this.size);
+			}
+
+			int value = this.listOfAcceptedIntegers.get(valueNumber);
+			grid[rowNumber][colNumber] = value;
+		}
+	}
+
+	// private void convertDLXListToGrid(int[][] originalGrid) {
+	// // int[][] result = new int[this.size][this.size];
+	//
+	// for (DancingNode n : answer) {
+	// DancingNode rcNode = n;
+	// int min = rcNode.column.number;
+	//
+	// for (DancingNode tmp = n.right; tmp != n; tmp = tmp.right) {
+	// int val = tmp.column.number;
+	//
+	// if (val < min) {
+	// min = val;
+	// rcNode = tmp;
+	// }
+	// }
+	//
+	// // we get line and column
+	// int ans1 = rcNode.column.number;
+	// int ans2 = rcNode.right.column.number;
+	// int r = ans1 / this.size;
+	// int c = ans1 % this.size;
+	// // and the affected value
+	// int num = (ans2 % this.size) + 1;
+	// // we affect that on the result grid
+	// originalGrid[r][c] = this.listOfAcceptedIntegers.get(num);
+	// }
+	//
+	// // return result;
+	// }
 
 	private boolean selectColumnNodeHeuristic() {
 		// this.minColConstraint = this.links.columnNodes.get(0);

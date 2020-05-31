@@ -3,15 +3,18 @@ package solver;
 public class DancingNode {
 	protected DancingNode left, right, up, down;
 	protected ColumnNode column;
+	protected int number;
+
 
 	//creates the initial dancing node without the column node reference
-	public DancingNode() {
+	public DancingNode(int number) {
 		this.left = this.right = this.up = this.down = this;
+		this.number=number;
 	}
 	
 	//creates the initial dancing node with column node reference.
-	public DancingNode(ColumnNode columnNode) {
-		this();
+	public DancingNode(ColumnNode columnNode, int number) {
+		this(number);
 		this.column = columnNode;
 	}
 	
