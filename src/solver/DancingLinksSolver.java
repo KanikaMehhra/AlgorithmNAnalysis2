@@ -99,26 +99,28 @@ public class DancingLinksSolver extends StdSudokuSolver {
 
 	private boolean recursiveSolve() {
 		boolean result = true;
+		// if all the columns are covered, master column points to itself
+		if (this.colsCovered.size() == this.coverMatrix[0].length) {
+			this.masterColumn.right = this.masterColumn;
+		}
 
 		if (this.masterColumn.right == this.masterColumn) {
 			this.result = this.answer;
 			return true;
 		}
-
-		if (this.colsCovered.size() == this.coverMatrix[0].length) {
-			return true;
-		}
-
+		// finds the column node with least number of dancing nodes linked to it.
 		boolean foundColumnNode = selectMinColumnNodeConstraint();
 		if (!foundColumnNode)
 			return false;
-
+		// covers the column node found.
 		this.minColConstraint.cover();
+		// add thae column number to the list of columns covered.
 		this.colsCovered.add(this.minColConstraint.number);
 
 		for (DancingNode dancingNode = this.minColConstraint.down; dancingNode != this.minColConstraint; dancingNode = dancingNode.down) {
+			// add the row which satisfies the column node.
 			this.answer.add(dancingNode);
-
+			// cover all the dancing nodes in the row selected as partial answer.
 			for (DancingNode dancingNodeInternal = dancingNode.right; dancingNodeInternal != dancingNode; dancingNodeInternal = dancingNodeInternal.right) {
 				dancingNodeInternal.column.cover();
 				this.colsCovered.add(dancingNodeInternal.column.number);
@@ -127,7 +129,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 			if (recursiveSolve()) {
 				result = true;
 				break;
-			} else {
+			} else {// backtrack for dancing node
 				result = false;
 				dancingNode = this.answer.remove(this.answer.size() - 1);
 				this.minColConstraint = dancingNode.column;
@@ -136,7 +138,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 					this.colsCovered.remove(dancingNodeRecover.column.number);
 				}
 			}
-		}
+		} // backtrack for column node
 		this.minColConstraint.uncover();
 		this.colsCovered.remove(this.minColConstraint.number);
 		return result;
