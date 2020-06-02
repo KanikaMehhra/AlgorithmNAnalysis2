@@ -24,6 +24,8 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	private Map<List<String>, Integer> cageCoordsWithValuesMap;
 	private int numberOfCages;
 	private SudokuGrid grid;
+	private List<Cage> cages;
+	private int maxTotal;
 
 	public KillerBackTrackingSolver() {
 		// TODO: any initialisation you want to implement.
@@ -33,6 +35,8 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.cageCoordsWithValuesMap = new HashMap<List<String>, Integer>();
 		this.numberOfCages = 0;
 		this.grid = null;
+		this.cages = new ArrayList<Cage>();
+		this.maxTotal = 0;
 
 	} // end of KillerBackTrackingSolver()
 
@@ -42,13 +46,212 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.grid = grid;
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
+		for (int num : this.acceptedNumbers) {
+			this.maxTotal += num;
+		}
 		this.matrix = grid.getSudokuGrid();
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
-		return recursiveSolve();
+//		setCagesInfo();
+//		cageRowSolver();
+//		cageColSolver();
+//		cageBoxSolver();
+
+		 return recursiveSolve();
 		// placeholder
-		// return false;
+//		return false;
 	} // end of solve()
+
+	public void cageRowSolver() {
+		for (int i = 0; i < this.size; i++) {
+			List<Cage> cagesInRowi = new ArrayList<Cage>();
+			for (Cage cage : this.cages) {
+				if (cage.rowNum == i) {
+					cagesInRowi.add(cage);
+				}
+			}
+			if (cagesInRowi.size() > 0) {
+				// calculate the number of cells covered with cages in row i
+				// int rowCagesCellSum = 0;
+				List<Integer> colsCovered = new ArrayList<Integer>();
+				int totalValueIniRow = 0;
+
+				for (Cage cage : cagesInRowi) {
+					totalValueIniRow += cage.value;
+					// rowCagesCellSum += cage.coordinates.size();
+					for (String coord : cage.coordinates) {
+						String[] splitCoord = coord.split(",");
+						colsCovered.add(Integer.parseInt(splitCoord[1]));
+					}
+				}
+				// look if any cell in this row has a value already filled in
+				int alreadyFilledValue = 0;
+				// int numOfAlreadyFilledCells = 0;
+				for (int col = 0; col < this.size; col++) {
+					if (!colsCovered.contains(col)) {
+						if (this.matrix[i][col] != UNASSIGNED) {
+							alreadyFilledValue = this.matrix[i][col];
+							colsCovered.add(col);
+							// numOfAlreadyFilledCells++;
+						}
+					}
+				}
+				// total value in a row
+				totalValueIniRow += alreadyFilledValue;
+				// find the col which acts as an innie for ith row.
+				int colLeft = -1;
+				if (colsCovered.size() == this.size - 1) {
+					for (int c = 0; c < this.size; c++) {
+						if (!colsCovered.contains(c)) {
+							colLeft = c;
+							break;
+						}
+					}
+					this.matrix[i][colLeft] = this.maxTotal - totalValueIniRow;
+				}
+			}
+
+		}
+
+	}
+
+	private List<String> cellsInBox(int row, int col) {
+		List<String> returnList = new ArrayList<String>();
+		int sqrt = (int) Math.sqrt(this.size);
+		int r = row - row % sqrt;
+		int c = col - col % sqrt;
+
+		for (int i = r; i < r + sqrt; i++) {
+			for (int j = c; j < c + sqrt; j++) {
+				// if (this.matrix[i][j] == number) {
+				// return true;
+				// }
+				returnList.add("" + i + "," + j);
+			}
+		}
+		return returnList;
+	}
+
+	public void cageBoxSolver() {
+		for (int i = 0; i < this.size; i++) {
+			List<Cage> cagesInBoxi = new ArrayList<Cage>();
+			for (Cage cage : this.cages) {
+				if (cage.boxNum == i) {
+					cagesInBoxi.add(cage);
+				}
+			}
+			if (cagesInBoxi.size() > 0) {
+				// calculate the number of cells covered with cages in row i
+				// int rowCagesCellSum = 0;
+				List<String> cellsCovered = new ArrayList<String>();
+				int totalValueIniBox = 0;
+
+				for (Cage cage : cagesInBoxi) {
+					totalValueIniBox += cage.value;
+					// rowCagesCellSum += cage.coordinates.size();
+					for (String coord : cage.coordinates) {
+						// String[] splitCoord = coord.split(",");
+						cellsCovered.add(coord);
+						// colsCovered.add(Integer.parseInt(splitCoord[1]));
+					}
+				}
+				// get the list of all the cells in ith box.
+				String[] rc = cagesInBoxi.get(0).coordinates.get(0).split(",");
+				List<String> cellsInBoxi = cellsInBox(Integer.parseInt(rc[0]), Integer.parseInt(rc[1]));
+				// look if any cell in this box has a value already filled in
+				int alreadyFilledValue = 0;
+				// int numOfAlreadyFilledCells = 0;
+				for (int cell = 0; cell < this.size; cell++) {
+					if (!cellsCovered.contains(cellsInBoxi.get(cell))) {
+						String[] split = cellsInBoxi.get(cell).split(",");
+						if (this.matrix[Integer.parseInt(split[0])][Integer.parseInt(split[1])] != UNASSIGNED) {
+							alreadyFilledValue = this.matrix[Integer.parseInt(split[0])][Integer.parseInt(split[1])];
+							cellsCovered.add(cellsInBoxi.get(cell));
+							// numOfAlreadyFilledCells++;
+						}
+					}
+				}
+				// total value in a row
+				totalValueIniBox += alreadyFilledValue;
+				// find the col which acts as an innie for ith row.
+				String cellLeft = "";
+				if (cellsCovered.size() == this.size - 1) {
+					for (int cell = 0; cell < this.size; cell++) {
+						if (!cellsCovered.contains(cellsInBoxi.get(cell))) {
+							cellLeft = cellsInBoxi.get(cell);
+							break;
+						}
+					}
+					String[] splitCell = cellLeft.split(",");
+					this.matrix[Integer.parseInt(splitCell[0])][Integer.parseInt(splitCell[0])] = this.maxTotal
+							- totalValueIniBox;
+				}
+			}
+
+		}
+
+	}
+
+	public void cageColSolver() {
+		for (int i = 0; i < this.size; i++) {
+			List<Cage> cagesInColi = new ArrayList<Cage>();
+			for (Cage cage : this.cages) {
+				if (cage.colNum == i) {
+					cagesInColi.add(cage);
+				}
+			}
+
+			if (cagesInColi.size() > 0) {
+				// calculate the number of cells covered with cages in row i
+				// int rowCagesCellSum = 0;
+				List<Integer> rowsCovered = new ArrayList<Integer>();
+				int totalValueIniCol = 0;
+
+				for (Cage cage : cagesInColi) {
+					totalValueIniCol += cage.value;
+					// rowCagesCellSum += cage.coordinates.size();
+					for (String coord : cage.coordinates) {
+						String[] splitCoord = coord.split(",");
+						rowsCovered.add(Integer.parseInt(splitCoord[0]));
+					}
+				}
+				// look if any cell in this row has a value already filled in
+				int alreadyFilledValue = 0;
+				// int numOfAlreadyFilledCells = 0;
+				for (int row = 0; row < this.size; row++) {
+					if (!rowsCovered.contains(row)) {
+						if (this.matrix[row][i] != UNASSIGNED) {
+							alreadyFilledValue = this.matrix[row][i];
+							rowsCovered.add(row);
+							// numOfAlreadyFilledCells++;
+						}
+					}
+				}
+				// total value in a row
+				totalValueIniCol += alreadyFilledValue;
+				// find the col which acts as an innie for ith row.
+				int rowLeft = -1;
+				if (rowsCovered.size() == this.size - 1) {
+					for (int r = 0; r < this.size; r++) {
+						if (!rowsCovered.contains(r)) {
+							rowLeft = r;
+							break;
+						}
+					}
+					this.matrix[rowLeft][i] = this.maxTotal - totalValueIniCol;
+				}
+			}
+
+		}
+
+	}
+
+	public void setCagesInfo() {
+		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
+			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size);
+			this.cages.add(cage);
+		}
+	}
 
 	public boolean recursiveSolve() {
 		for (int row = 0; row < this.size; row++) {
