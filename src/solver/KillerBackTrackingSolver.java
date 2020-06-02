@@ -5,6 +5,7 @@
 package solver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	private SudokuGrid grid;
 	private List<Cage> cages;
 	private int maxTotal;
+	private Map<Cage, List<Integer>> cagesPermutations;
 
 	public KillerBackTrackingSolver() {
 		// TODO: any initialisation you want to implement.
@@ -37,6 +39,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.grid = null;
 		this.cages = new ArrayList<Cage>();
 		this.maxTotal = 0;
+		this.cagesPermutations = new HashMap<Cage, List<Integer>>();
 
 	} // end of KillerBackTrackingSolver()
 
@@ -52,15 +55,96 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.matrix = grid.getSudokuGrid();
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
-//		setCagesInfo();
-//		cageRowSolver();
-//		cageColSolver();
-//		cageBoxSolver();
+		setCagesInfo();
+		calculateCombinations();
+		// cageRowSolver();
+		// cageColSolver();
+		// cageBoxSolver();
 
-		 return recursiveSolve();
+		// return recursiveSolve();
 		// placeholder
-//		return false;
+		return false;
 	} // end of solve()
+
+	// private int countRec(int n, int sum)
+	// {
+	// // Base case
+	// if (n == 0)
+	// return sum == 0 ?1:0;
+	//
+	// if (sum == 0)
+	// return 1;
+	//
+	// // Initialize answer
+	// int ans = 0;
+	//
+	// // Traverse through every digit and count
+	// // numbers beginning with it using recursion
+	// for (int i=0; i<=9; i++)
+	// if (sum-i >= 0)
+	// ans += countRec(n-1, sum-i);
+	//
+	// return ans;
+	// }
+	//
+	// // This is mainly a wrapper over countRec. It
+	// // explicitly handles leading digit and calls
+	// // countRec() for remaining digits.
+	// private int finalCount(int n, int sum)
+	// {
+	// // Initialize final answer
+	// int ans = 0;
+	//
+	// // Traverse through every digit from 1 to
+	// // 9 and count numbers beginning with it
+	// for (int i = 0; i < this.size; i++)
+	// if (sum-this.acceptedNumbers.get(i) >= 0)
+	// ans += countRec(n-1, sum-this.acceptedNumbers.get(i));
+	//
+	// return ans;
+	// }
+
+	public List<List<Integer>> findCombinations(int n, int k) {
+		// public List<List<Integer>> findCombinations(int n, int k) {
+		System.out.println("N = " + n + " K = " + k);
+		List<Integer> subCombinationList = new ArrayList<>();
+		List<List<Integer>> combinationList = new ArrayList<List<Integer>>();
+		combinationUtil(k, n, 0, 0, subCombinationList, combinationList);
+		// combinationUtil(k, n, 0, 0, subCombinationList);
+		// System.out.println(subCombinationList.size());
+		return combinationList;
+	}
+
+	public void combinationUtil(int k, int n, int sum, int start, List<Integer> subCombinationList,
+			List<List<Integer>> combinationList) {
+		if (k == 0) {
+			if (sum == n) {
+				combinationList.add(subCombinationList);
+				System.out.println(subCombinationList);
+			}
+			return;
+		}
+
+		for (int i = start; i < this.size; i++) {
+			subCombinationList.add(this.acceptedNumbers.get(i));
+			combinationUtil(k - 1, n, sum + this.acceptedNumbers.get(i), i + 1, subCombinationList, combinationList);
+			subCombinationList.remove(subCombinationList.size() - 1);
+		}
+	}
+
+	private void calculateCombinations() {
+		for (Cage cage : this.cages) {
+			List<List<Integer>> solutionIntegers = new ArrayList<List<Integer>>();
+			int value = cage.value;
+			int numOfCells = cage.coordinates.size();
+			solutionIntegers = findCombinations(value, numOfCells);
+			System.out.println(solutionIntegers.size());
+		}
+	}
+
+	private void permute() {
+
+	}
 
 	public void cageRowSolver() {
 		for (int i = 0; i < this.size; i++) {
