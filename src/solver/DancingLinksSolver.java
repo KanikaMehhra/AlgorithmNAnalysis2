@@ -75,6 +75,11 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	}
 
 	private boolean selectMinColumnNodeConstraint() {
+		if (this.colsCovered.size() == this.coverMatrix[0].length) {
+			this.masterColumn.right = this.masterColumn;
+			return true;
+		}
+
 		int minColValue = 0;
 		this.minColConstraint = null;
 		for (ColumnNode columnNode : this.links.columnNodes) {
@@ -99,10 +104,6 @@ public class DancingLinksSolver extends StdSudokuSolver {
 
 	private boolean recursiveSolve() {
 		boolean result = true;
-		// if all the columns are covered, master column points to itself
-		if (this.colsCovered.size() == this.coverMatrix[0].length) {
-			this.masterColumn.right = this.masterColumn;
-		}
 
 		if (this.masterColumn.right == this.masterColumn) {
 			this.result = this.answer;
