@@ -115,7 +115,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 			return false;
 		// covers the column node found.
 		this.minColConstraint.cover();
-		// add thae column number to the list of columns covered.
+		// add the column number to the list of columns covered.
 		this.colsCovered.add(this.minColConstraint.number);
 
 		for (DancingNode dancingNode = this.minColConstraint.down; dancingNode != this.minColConstraint; dancingNode = dancingNode.down) {

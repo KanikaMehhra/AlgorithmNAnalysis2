@@ -43,6 +43,7 @@ public class StdSudokuGrid extends SudokuGrid {
 	@Override
 	public void outputGrid(String filename) throws FileNotFoundException, IOException {
 		if (validate())
+			if (validate())
 			try (PrintWriter writer = new PrintWriter(new File(filename))) {
 				for (int i = 0; i < this.sudokuGridLength; i++) {
 					StringBuilder sb = new StringBuilder();

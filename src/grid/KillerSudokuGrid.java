@@ -54,40 +54,61 @@ public class KillerSudokuGrid extends SudokuGrid {
 	@Override
 	public void outputGrid(String filename) throws FileNotFoundException, IOException {
 		// TODO
+		if (validate())
+			try (PrintWriter writer = new PrintWriter(new File(filename))) {
+				for (int i = 0; i < this.sudokuGridLength; i++) {
+					StringBuilder sb = new StringBuilder();
+					for (int j = 0; j < this.sudokuGridLength; j++) {
+						sb.append(this.sudokuGrid[i][j]);
+						if (j != this.sudokuGridLength - 1)
+							sb.append(",");
+					}
+					sb.append("\n");
+					writer.write(sb.toString());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	} // end of outputBoard()
 
 	@Override
 	public String toString() {
 		String result = "";
-		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet())
-			result += "Key = " + entry.getKey() + ", Value = " + entry.getValue()+"\n";
+		for (int[] row : this.sudokuGrid) {
+			result += Arrays.toString(row) + "\n";
+		}
 		return result;
-		// placeholder
+		// String result = "";
+		// for (Map.Entry<List<String>, Integer> entry :
+		// this.cageCoordsWithValuesMap.entrySet())
+		// result += "Key = " + entry.getKey() + ", Value = " + entry.getValue() + "\n";
+		// return result;
 	} // end of toString()
 
 	@Override
 	public boolean validate() {
 		// TODO
-		if(!commonValidate())
+		if (!commonValidate())
 			return false;
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
-			int sum=0;
-			List<Integer>cageCoordValues=new ArrayList<Integer>();
-			
-			for(String coord:entry.getKey()) {
-				String[] coordSplit=coord.split(",");
-				int value=this.sudokuGrid[Integer.parseInt(coordSplit[0])][Integer.parseInt(coordSplit[1])];
-				sum+=value;
+			int sum = 0;
+			List<Integer> cageCoordValues = new ArrayList<Integer>();
+
+			for (String coord : entry.getKey()) {
+				String[] coordSplit = coord.split(",");
+				int value = this.sudokuGrid[Integer.parseInt(coordSplit[0])][Integer.parseInt(coordSplit[1])];
+				sum += value;
 				cageCoordValues.add(value);
 			}
-			if(sum!=entry.getValue())
+			if (sum != entry.getValue())
 				return false;
-			if(!isHashLengthSame(cageCoordValues))
+			if (!isHashLengthSame(cageCoordValues))
 				return false;
 		}
-			
-		// placeholder
 		return true;
 	} // end of validate()
 
+	public Map<List<String>, Integer> getCageCoordsWithValuesMap() {
+		return this.cageCoordsWithValuesMap;
+	}
 } // end of class KillerSudokuGrid
