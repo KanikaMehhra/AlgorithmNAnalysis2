@@ -68,14 +68,14 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
 		setCagesInfo();
-		calculateCombinationPermutation();
-		 cageRowSolver();
-		 cageColSolver();
-		 cageBoxSolver();
+//		calculateCombinationPermutation();
+		// cageRowSolver();
+		// cageColSolver();
+		// cageBoxSolver();
 
-		 return recursiveSolve();
+		// return recursiveSolve();
 		// placeholder
-//		return rSolve();
+		return rSolve();
 		// return false;
 	} // end of solve()
 
@@ -217,76 +217,80 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		return smallestValueCage;
 	}
 
-	public List<List<Integer>> combinationSum3(int k, int n) {
-		List<List<Integer>> result = new ArrayList<List<Integer>>();
-		List<Integer> curr = new ArrayList<Integer>();
-		helper(result, curr, k, 0, n);
-		return result;
-	}
+	// public List<List<Integer>> combinationSum3(int k, int n) {
+	// List<List<Integer>> result = new ArrayList<List<Integer>>();
+	// List<Integer> curr = new ArrayList<Integer>();
+	// helper(result, curr, k, 0, n);
+	// return result;
+	// }
+	//
+	// public void helper(List<List<Integer>> result, List<Integer> curr, int k, int
+	// start, int sum) {
+	// if (sum < 0) {
+	// return;
+	// }
+	//
+	// if (sum == 0 && curr.size() == k) {
+	// result.add(new ArrayList<Integer>(curr));
+	// return;
+	// }
+	//
+	// for (int i = start; i < this.size; i++) {
+	// curr.add(this.acceptedNumbers.get(i));
+	// helper(result, curr, k, i + 1, sum - this.acceptedNumbers.get(i));
+	// curr.remove(curr.size() - 1);
+	// }
+	// }
 
-	public void helper(List<List<Integer>> result, List<Integer> curr, int k, int start, int sum) {
-		if (sum < 0) {
-			return;
-		}
-
-		if (sum == 0 && curr.size() == k) {
-			result.add(new ArrayList<Integer>(curr));
-			return;
-		}
-
-		for (int i = start; i < this.size; i++) {
-			curr.add(this.acceptedNumbers.get(i));
-			helper(result, curr, k, i + 1, sum - this.acceptedNumbers.get(i));
-			curr.remove(curr.size() - 1);
-		}
-	}
-
-	private void calculateCombinationPermutation() {
-		for (Cage cage : this.cages) {
-			List<List<Integer>> solutionIntegersCombinations = new ArrayList<List<Integer>>();
-			List<List<Integer>> solutionIntegersPermutations = new ArrayList<List<Integer>>();
-			int value = cage.value;
-			int numOfCells = cage.coordinates.size();
-			solutionIntegersCombinations = combinationSum3(numOfCells, value);
-			for (List<Integer> combination : solutionIntegersCombinations) {
-				List<List<Integer>> permute = permute(combination);
-				for (List<Integer> permutation : permute) {
-					solutionIntegersPermutations.add(permutation);
-				}
-
-			}
-			this.cagesPermutationsMap.put(cage, solutionIntegersPermutations);
-		}
-	}
-
-	public List<List<Integer>> permute(List<Integer> nums) {
-		List<List<Integer>> result = new ArrayList<>();
-		helper(0, nums, result);
-		return result;
-	}
-
-	private void helper(int start, List<Integer> nums, List<List<Integer>> result) {
-		if (start == nums.size() - 1) {
-			ArrayList<Integer> list = new ArrayList<>();
-			for (int num : nums) {
-				list.add(num);
-			}
-			result.add(list);
-			return;
-		}
-
-		for (int i = start; i < nums.size(); i++) {
-			swap(nums, i, start);
-			helper(start + 1, nums, result);
-			swap(nums, i, start);
-		}
-	}
-
-	private void swap(List<Integer> nums, int i, int j) {
-		int temp = nums.get(i);
-		nums.set(i, nums.get(j));// [i] = nums.get(j);
-		nums.set(j, temp);// = temp;
-	}
+	// private void calculateCombinationPermutation() {
+	// for (Cage cage : this.cages) {
+	// List<List<Integer>> solutionIntegersCombinations = new
+	// ArrayList<List<Integer>>();
+	// List<List<Integer>> solutionIntegersPermutations = new
+	// ArrayList<List<Integer>>();
+	// int value = cage.value;
+	// int numOfCells = cage.coordinates.size();
+	// solutionIntegersCombinations = combinationSum3(numOfCells, value);
+	// for (List<Integer> combination : solutionIntegersCombinations) {
+	// List<List<Integer>> permute = permute(combination);
+	// for (List<Integer> permutation : permute) {
+	// solutionIntegersPermutations.add(permutation);
+	// }
+	//
+	// }
+	// this.cagesPermutationsMap.put(cage, solutionIntegersPermutations);
+	// }
+	// }
+	//
+	// public List<List<Integer>> permute(List<Integer> nums) {
+	// List<List<Integer>> result = new ArrayList<>();
+	// helper(0, nums, result);
+	// return result;
+	// }
+	//
+	// private void helper(int start, List<Integer> nums, List<List<Integer>>
+	// result) {
+	// if (start == nums.size() - 1) {
+	// ArrayList<Integer> list = new ArrayList<>();
+	// for (int num : nums) {
+	// list.add(num);
+	// }
+	// result.add(list);
+	// return;
+	// }
+	//
+	// for (int i = start; i < nums.size(); i++) {
+	// swap(nums, i, start);
+	// helper(start + 1, nums, result);
+	// swap(nums, i, start);
+	// }
+	// }
+	//
+	// private void swap(List<Integer> nums, int i, int j) {
+	// int temp = nums.get(i);
+	// nums.set(i, nums.get(j));// [i] = nums.get(j);
+	// nums.set(j, temp);// = temp;
+	// }
 
 	public void cageRowSolver() {
 		for (int i = 0; i < this.size; i++) {
@@ -473,7 +477,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 
 	public void setCagesInfo() {
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
-			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size);
+			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers, this.cagesPermutationsMap);
 			this.cages.add(cage);
 			this.cagesLeft.add(cage);
 		}
