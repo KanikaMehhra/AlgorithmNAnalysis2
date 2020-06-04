@@ -12,6 +12,8 @@ public class Cage {
 	protected int boxNum;
 	private int size;
 	private int smallGridSize;
+	private static int count=-1;
+	protected int id;
 
 	public Cage(int value, List<String> coordinates, int size) {
 		this.value = value;
@@ -21,6 +23,7 @@ public class Cage {
 		calculateRowNum();
 		calculateColNum();
 		calculateBoxNum();
+		this.id=++this.count;
 	}
 
 	private void calculateColNum() {

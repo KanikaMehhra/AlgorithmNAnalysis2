@@ -6,9 +6,13 @@ package solver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import grid.KillerSudokuGrid;
 import grid.SudokuGrid;
@@ -27,7 +31,11 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	private SudokuGrid grid;
 	private List<Cage> cages;
 	private int maxTotal;
-	private Map<Cage, List<Integer>> cagesPermutations;
+	private Map<Cage, List<List<Integer>>> cagesPermutationsMap;
+	private List<Cage> cagesCovered;
+	private List<Cage> cagesLeft;
+	private List<List<Integer>> answerPermutations;
+	private List<List<Integer>> combinationList;
 
 	public KillerBackTrackingSolver() {
 		// TODO: any initialisation you want to implement.
@@ -39,7 +47,11 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.grid = null;
 		this.cages = new ArrayList<Cage>();
 		this.maxTotal = 0;
-		this.cagesPermutations = new HashMap<Cage, List<Integer>>();
+		this.cagesPermutationsMap = new HashMap<Cage, List<List<Integer>>>();
+		this.cagesCovered = new ArrayList<Cage>();
+		this.answerPermutations = new ArrayList<List<Integer>>();
+		this.cagesLeft = new ArrayList<Cage>();
+		this.combinationList = new ArrayList<List<Integer>>();
 
 	} // end of KillerBackTrackingSolver()
 
@@ -56,94 +68,224 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
 		setCagesInfo();
-		calculateCombinations();
+		calculateCombinationPermutation();
 		// cageRowSolver();
 		// cageColSolver();
 		// cageBoxSolver();
 
-		// return recursiveSolve();
+//		 return recursiveSolve();
 		// placeholder
-		return false;
+		return rSolve();
+		// return false;
 	} // end of solve()
 
-	// private int countRec(int n, int sum)
-	// {
-	// // Base case
-	// if (n == 0)
-	// return sum == 0 ?1:0;
-	//
-	// if (sum == 0)
-	// return 1;
-	//
-	// // Initialize answer
-	// int ans = 0;
-	//
-	// // Traverse through every digit and count
-	// // numbers beginning with it using recursion
-	// for (int i=0; i<=9; i++)
-	// if (sum-i >= 0)
-	// ans += countRec(n-1, sum-i);
-	//
-	// return ans;
-	// }
-	//
-	// // This is mainly a wrapper over countRec. It
-	// // explicitly handles leading digit and calls
-	// // countRec() for remaining digits.
-	// private int finalCount(int n, int sum)
-	// {
-	// // Initialize final answer
-	// int ans = 0;
-	//
-	// // Traverse through every digit from 1 to
-	// // 9 and count numbers beginning with it
-	// for (int i = 0; i < this.size; i++)
-	// if (sum-this.acceptedNumbers.get(i) >= 0)
-	// ans += countRec(n-1, sum-this.acceptedNumbers.get(i));
-	//
-	// return ans;
-	// }
-
-	public List<List<Integer>> findCombinations(int n, int k) {
-		// public List<List<Integer>> findCombinations(int n, int k) {
-		System.out.println("N = " + n + " K = " + k);
-		List<Integer> subCombinationList = new ArrayList<>();
-		List<List<Integer>> combinationList = new ArrayList<List<Integer>>();
-		combinationUtil(k, n, 0, 0, subCombinationList, combinationList);
-		// combinationUtil(k, n, 0, 0, subCombinationList);
-		// System.out.println(subCombinationList.size());
-		return combinationList;
+	public boolean isHashLengthSame(List<Integer> list) {
+		Set<Integer> hash = new HashSet<Integer>(list);
+		return (hash.size() == list.size());
 	}
 
-	public void combinationUtil(int k, int n, int sum, int start, List<Integer> subCombinationList,
-			List<List<Integer>> combinationList) {
-		if (k == 0) {
-			if (sum == n) {
-				combinationList.add(subCombinationList);
-				System.out.println(subCombinationList);
+	// public boolean validate(Cage smallestValueCage) {
+	// // TODO
+	// if (!commonValidate())
+	// return false;
+	// // for(St)
+	// // smallestValueCage
+	// for (Map.Entry<List<String>, Integer> entry :
+	// this.cageCoordsWithValuesMap.entrySet()) {
+	// int sum = 0;
+	// List<Integer> cageCoordValues = new ArrayList<Integer>();
+	//
+	// for (String coord : entry.getKey()) {
+	// String[] coordSplit = coord.split(",");
+	//
+	// if
+	// (this.matrix[Integer.parseInt(coordSplit[0])][Integer.parseInt(coordSplit[1])]
+	// != UNASSIGNED) {
+	// int value =
+	// this.matrix[Integer.parseInt(coordSplit[0])][Integer.parseInt(coordSplit[1])];
+	// sum += value;
+	// cageCoordValues.add(this.matrix[Integer.parseInt(coordSplit[0])][Integer.parseInt(coordSplit[1])]);
+	// }
+	//
+	// }
+	// if (entry.getValue() != sum)
+	// return false;
+	// // checks the uniqueness of cage values.
+	// if (!this.grid.isHashLengthSame(cageCoordValues))
+	// return false;
+	// }
+	// return true;
+	// }
+
+	public boolean commonValidate() {
+		int smallGridSize = (int) Math.sqrt(this.size);
+		for (int[] row : this.matrix) {
+			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
+			rowList.removeAll(Collections.singleton(UNASSIGNED));
+			// checks first condition
+			if (!this.acceptedNumbers.containsAll(rowList)) {
+				return false;
 			}
+			// checks second condition
+			if (!isHashLengthSame(rowList)) {
+				return false;
+			}
+		}
+
+		for (int j = 0; j < this.size; j++) {
+			List<Integer> smallGridArray = new ArrayList<Integer>();
+			List<Integer> colList = new ArrayList<Integer>();
+
+			for (int i = 0; i < this.size; i++) {
+				colList.add(this.matrix[i][j]);
+
+				smallGridArray.add(i, this.matrix[(j / smallGridSize) * smallGridSize + i / smallGridSize][j
+						* smallGridSize % this.size + i % smallGridSize]);
+			}
+			colList.removeAll(Collections.singleton(UNASSIGNED));
+			smallGridArray.removeAll(Collections.singleton(UNASSIGNED));
+
+			// checks third condition
+			if (!isHashLengthSame(colList)) {
+				return false;
+			}
+			// check fourth condition
+			if (!isHashLengthSame(smallGridArray)) {
+				return false;
+			}
+
+		}
+
+		return true;
+	}
+
+	private boolean rSolve() {
+		boolean returnValue = true;
+		if (!commonValidate()) {
+			return false;
+		}
+		if (this.cages.size() == this.cagesCovered.size()) {
+			return true;
+		}
+		Cage smallestValueCage = getCageWithSmallestValue();
+		if (smallestValueCage.id == 7) {
+			System.out.println(smallestValueCage.id);
+		}
+		for (List<Integer> permutation : this.cagesPermutationsMap.get(smallestValueCage)) {
+			this.cagesCovered.add(smallestValueCage);
+			this.cagesLeft.remove(smallestValueCage);
+			fillCageCoords(smallestValueCage, permutation);
+			if (rSolve()) {
+				returnValue = true;
+				break;
+			} else {
+				this.cagesCovered.remove(smallestValueCage);
+				this.cagesLeft.add(smallestValueCage);
+				unFillCageCoords(smallestValueCage);
+				returnValue = false;
+			}
+		}
+
+		return returnValue;
+	}
+
+	private void fillCageCoords(Cage cage, List<Integer> permutation) {
+		for (int i = 0; i < permutation.size(); i++) {
+			String[] rc = cage.coordinates.get(i).split(",");
+			int r = Integer.parseInt(rc[0]);
+			int c = Integer.parseInt(rc[1]);
+			this.matrix[r][c] = permutation.get(i);
+		}
+	}
+
+	private void unFillCageCoords(Cage cage) {
+		for (String cageCoord : cage.coordinates) {
+			String[] rc = cageCoord.split(",");
+			int r = Integer.parseInt(rc[0]);
+			int c = Integer.parseInt(rc[1]);
+			this.matrix[r][c] = UNASSIGNED;
+		}
+	}
+
+	private Cage getCageWithSmallestValue() {
+		Cage smallestValueCage = this.cagesLeft.get(0);
+		for (Cage cage : this.cagesLeft) {
+			if (cage.value < smallestValueCage.value) {
+				smallestValueCage = cage;
+			}
+		}
+		return smallestValueCage;
+	}
+
+	public List<List<Integer>> combinationSum3(int k, int n) {
+		List<List<Integer>> result = new ArrayList<List<Integer>>();
+		List<Integer> curr = new ArrayList<Integer>();
+		helper(result, curr, k, 0, n);
+		return result;
+	}
+
+	public void helper(List<List<Integer>> result, List<Integer> curr, int k, int start, int sum) {
+		if (sum < 0) {
+			return;
+		}
+
+		if (sum == 0 && curr.size() == k) {
+			result.add(new ArrayList<Integer>(curr));
 			return;
 		}
 
 		for (int i = start; i < this.size; i++) {
-			subCombinationList.add(this.acceptedNumbers.get(i));
-			combinationUtil(k - 1, n, sum + this.acceptedNumbers.get(i), i + 1, subCombinationList, combinationList);
-			subCombinationList.remove(subCombinationList.size() - 1);
+			curr.add(this.acceptedNumbers.get(i));
+			helper(result, curr, k, i + 1, sum - this.acceptedNumbers.get(i));
+			curr.remove(curr.size() - 1);
 		}
 	}
 
-	private void calculateCombinations() {
+	private void calculateCombinationPermutation() {
 		for (Cage cage : this.cages) {
-			List<List<Integer>> solutionIntegers = new ArrayList<List<Integer>>();
+			List<List<Integer>> solutionIntegersCombinations = new ArrayList<List<Integer>>();
+			List<List<Integer>> solutionIntegersPermutations = new ArrayList<List<Integer>>();
 			int value = cage.value;
 			int numOfCells = cage.coordinates.size();
-			solutionIntegers = findCombinations(value, numOfCells);
-			System.out.println(solutionIntegers.size());
+			solutionIntegersCombinations = combinationSum3(numOfCells, value);
+			for (List<Integer> combination : solutionIntegersCombinations) {
+				List<List<Integer>> permute = permute(combination);
+				for (List<Integer> permutation : permute) {
+					solutionIntegersPermutations.add(permutation);
+				}
+
+			}
+			this.cagesPermutationsMap.put(cage, solutionIntegersPermutations);
 		}
 	}
 
-	private void permute() {
+	public List<List<Integer>> permute(List<Integer> nums) {
+		List<List<Integer>> result = new ArrayList<>();
+		helper(0, nums, result);
+		return result;
+	}
 
+	private void helper(int start, List<Integer> nums, List<List<Integer>> result) {
+		if (start == nums.size() - 1) {
+			ArrayList<Integer> list = new ArrayList<>();
+			for (int num : nums) {
+				list.add(num);
+			}
+			result.add(list);
+			return;
+		}
+
+		for (int i = start; i < nums.size(); i++) {
+			swap(nums, i, start);
+			helper(start + 1, nums, result);
+			swap(nums, i, start);
+		}
+	}
+
+	private void swap(List<Integer> nums, int i, int j) {
+		int temp = nums.get(i);
+		nums.set(i, nums.get(j));// [i] = nums.get(j);
+		nums.set(j, temp);// = temp;
 	}
 
 	public void cageRowSolver() {
@@ -162,7 +304,6 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 
 				for (Cage cage : cagesInRowi) {
 					totalValueIniRow += cage.value;
-					// rowCagesCellSum += cage.coordinates.size();
 					for (String coord : cage.coordinates) {
 						String[] splitCoord = coord.split(",");
 						colsCovered.add(Integer.parseInt(splitCoord[1]));
@@ -334,6 +475,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
 			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size);
 			this.cages.add(cage);
+			this.cagesLeft.add(cage);
 		}
 	}
 
@@ -391,6 +533,8 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	}
 
 	private boolean isGreaterThanCageValueRange(int row, int col, int number) {
+		if (!commonValidate())
+			return false;
 		String rowCol = "" + row + "," + col;
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
 			if (entry.getKey().contains(rowCol)) {
@@ -401,7 +545,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 					String[] rc = coord.split(",");
 					int r = Integer.parseInt(rc[0]);
 					int c = Integer.parseInt(rc[1]);
-					if (this.matrix[r][c] != -1) {
+					if (this.matrix[r][c] != UNASSIGNED) {
 						actualTotalValueOfTheCageCoord += this.matrix[r][c];
 						cageCoordValues.add(this.matrix[r][c]);
 					}
