@@ -34,8 +34,9 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	private Map<Cage, List<List<Integer>>> cagesPermutationsMap;
 	private List<Cage> cagesCovered;
 	private List<Cage> cagesLeft;
-	private List<List<Integer>> answerPermutations;
-	private List<List<Integer>> combinationList;
+	// private List<List<Integer>> answerPermutations;
+	// private List<List<Integer>> combinationList;
+	private List<Cell> cells;
 
 	public KillerBackTrackingSolver() {
 		// TODO: any initialisation you want to implement.
@@ -49,9 +50,10 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.maxTotal = 0;
 		this.cagesPermutationsMap = new HashMap<Cage, List<List<Integer>>>();
 		this.cagesCovered = new ArrayList<Cage>();
-		this.answerPermutations = new ArrayList<List<Integer>>();
+		// this.answerPermutations = new ArrayList<List<Integer>>();
 		this.cagesLeft = new ArrayList<Cage>();
-		this.combinationList = new ArrayList<List<Integer>>();
+		// this.combinationList = new ArrayList<List<Integer>>();
+		this.cells = new ArrayList<Cell>();
 
 	} // end of KillerBackTrackingSolver()
 
@@ -68,7 +70,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
 		setCagesInfo();
-//		calculateCombinationPermutation();
+		// calculateCombinationPermutation();
 		// cageRowSolver();
 		// cageColSolver();
 		// cageBoxSolver();
@@ -477,7 +479,8 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 
 	public void setCagesInfo() {
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
-			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers, this.cagesPermutationsMap);
+			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers,
+					this.cagesPermutationsMap, this.cells);
 			this.cages.add(cage);
 			this.cagesLeft.add(cage);
 		}

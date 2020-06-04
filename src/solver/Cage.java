@@ -21,7 +21,7 @@ public class Cage {
 	protected List<List<Integer>> permutations = new ArrayList<List<Integer>>();
 
 	public Cage(int value, List<String> coordinates, int size, List<Integer> acceptedNumbers,
-			Map<Cage, List<List<Integer>>> cagesPermutationsMap) {
+			Map<Cage, List<List<Integer>>> cagesPermutationsMap, List<Cell> cells) {
 		this.value = value;
 		this.coordinates = coordinates;
 		this.size = size;
@@ -34,6 +34,17 @@ public class Cage {
 		this.combinations = combinationSum3(this.coordinates.size(), this.value);
 		permuteAllCombinations();
 		cagesPermutationsMap.put(this, this.permutations);
+		createCells(cells);
+	}
+
+	private void createCells(List<Cell> cells) {
+		for (String cageCoord : this.coordinates) {
+			String[] rc = cageCoord.split(",");
+			int r = Integer.parseInt(rc[0]);
+			int c = Integer.parseInt(rc[1]);
+			Cell cell = new Cell(r, c, this.size);
+			cells.add(cell);
+		}
 	}
 
 	private void permuteAllCombinations() {

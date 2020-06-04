@@ -3,12 +3,15 @@ package solver;
 import java.util.List;
 
 public class Cell {
+	protected int row;
+	protected int col;
 	protected List<Integer> permittedIntegers;
 	protected int index;
 
 	public Cell(int row, int col, int size) {
 		this.index = calculateIndex(row, col, size);
-
+		this.row=row;
+		this.col=col;
 	}
 
 	private int calculateIndex(int row, int col, int size) {
