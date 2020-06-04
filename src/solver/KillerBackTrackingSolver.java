@@ -73,9 +73,9 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		// cageColSolver();
 		// cageBoxSolver();
 
-//		 return recursiveSolve();
+		 return recursiveSolve();
 		// placeholder
-		return rSolve();
+//		return rSolve();
 		// return false;
 	} // end of solve()
 
