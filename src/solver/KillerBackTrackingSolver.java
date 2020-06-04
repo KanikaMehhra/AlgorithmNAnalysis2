@@ -69,9 +69,9 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
 		setCagesInfo();
 		calculateCombinationPermutation();
-		// cageRowSolver();
-		// cageColSolver();
-		// cageBoxSolver();
+		 cageRowSolver();
+		 cageColSolver();
+		 cageBoxSolver();
 
 		 return recursiveSolve();
 		// placeholder
