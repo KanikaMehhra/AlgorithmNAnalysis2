@@ -1,6 +1,7 @@
 package solver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class Cage {
 	private List<Integer> acceptedNumbers;
 	protected List<List<Integer>> combinations = new ArrayList<List<Integer>>();
 	protected List<List<Integer>> permutations = new ArrayList<List<Integer>>();
+	protected Map<Integer, List<List<Integer>>> mapOfPermutationsStartingWithASpecificDigit = new HashMap<Integer, List<List<Integer>>>();
 
 	public Cage(int value, List<String> coordinates, int size, List<Integer> acceptedNumbers,
 			Map<Cage, List<List<Integer>>> cagesPermutationsMap, List<Cell> cells) {
@@ -33,8 +35,9 @@ public class Cage {
 		this.acceptedNumbers = acceptedNumbers;
 		this.combinations = combinationSum3(this.coordinates.size(), this.value);
 		permuteAllCombinations();
-		cagesPermutationsMap.put(this, this.permutations);
+		// this.mapOfPermutationsStartingWithASpecificDigit;
 		createCells(cells);
+
 	}
 
 	private void createCells(List<Cell> cells) {
@@ -42,7 +45,7 @@ public class Cage {
 			String[] rc = cageCoord.split(",");
 			int r = Integer.parseInt(rc[0]);
 			int c = Integer.parseInt(rc[1]);
-			Cell cell = new Cell(r, c, this.size);
+			Cell cell = new Cell(r, c, this.size, this.combinations, this.id);
 			cells.add(cell);
 		}
 	}
@@ -52,6 +55,20 @@ public class Cage {
 			List<List<Integer>> permute = permute(combination);
 			for (List<Integer> permutation : permute) {
 				this.permutations.add(permutation);
+				List<List<Integer>> temList = new ArrayList<List<Integer>>();
+				if (this.mapOfPermutationsStartingWithASpecificDigit.get(permutation.get(0)) != null) {
+
+					// temList.add(permutation);
+					// this.mapOfPermutationsStartingWithASpecificDigit.put(permutation.get(0),
+					// temList);
+
+					temList = this.mapOfPermutationsStartingWithASpecificDigit.get(permutation.get(0));
+					// temList.add(permutation);
+					// this.mapOfPermutationsStartingWithASpecificDigit.put(permutation.get(0),
+					// temList);
+				}
+				temList.add(permutation);
+				this.mapOfPermutationsStartingWithASpecificDigit.put(permutation.get(0), temList);
 			}
 
 		}

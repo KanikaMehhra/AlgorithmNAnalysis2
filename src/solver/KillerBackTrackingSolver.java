@@ -7,6 +7,7 @@ package solver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +71,9 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		this.numberOfCages = this.cageCoordsWithValuesMap.size();
 		setCagesInfo();
+		Collections.sort(this.cells, new CellIndexComparator());
+		// Arrays.sort(this.cells, Comparator.comparing(Cell::index));
+		// Collections.sort(this.cells);
 		// calculateCombinationPermutation();
 		// cageRowSolver();
 		// cageColSolver();
@@ -77,9 +81,73 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 
 		// return recursiveSolve();
 		// placeholder
-		return rSolve();
+		// return rSolve();
+		return newSolve(0);
 		// return false;
 	} // end of solve()
+
+	public boolean newSolve(int cellIndex) {
+		for (int i = cellIndex; i < this.cells.size(); i++) {
+			Cell cell = this.cells.get(i);
+			// for (Cell cell : this.cells) {
+			if (this.matrix[cell.row][cell.col] == UNASSIGNED) {
+				for (int permittedValue : cell.permittedIntegers) {
+					for (List<Integer> permutation : this.cages
+							.get(cell.cageId).mapOfPermutationsStartingWithASpecificDigit.get(permittedValue)) {
+						fillCageCoords(this.cages.get(cell.cageId), permutation);
+						if (commonValidate()) {
+							if (newSolve(i+1)) {
+								return true;
+							} else {
+								unFillCageCoords(this.cages.get(cell.cageId));
+								// this.matrix[cell.row][cell.col] = UNASSIGNED;
+							}
+						} else {
+							unFillCageCoords(this.cages.get(cell.cageId));
+//							if(!isInRow(row, number))
+//							break;
+						}
+					}
+					if(permittedValue==cell.permittedIntegers.get(cell.permittedIntegers.size()-1))
+						return false;
+
+					// if (isValidCommon2(cell.row, cell.col, permittedValue,
+					// this.cages.get(cell.cageId))) {
+					// this.matrix[cell.row][cell.col] = permittedValue;
+					// if (newSolve()) {
+					// return true;
+					// } else {
+					// this.matrix[cell.row][cell.col] = UNASSIGNED;
+					// }
+					// }
+				}
+				return false;
+			}
+//			++cellIndex;
+
+			// }
+		}
+
+		// for (int row = 0; row < this.size; row++) {
+		// for (int col = 0; col < this.size; col++) {
+		// if (this.matrix[row][col] == UNASSIGNED) {
+		// for (int number = 0; number < this.size; number++) {
+		// if (isValidCommon(row, col, this.acceptedNumbers.get(number))) {
+		// matrix[row][col] = this.acceptedNumbers.get(number);
+		// if (recursiveSolve()) {
+		// return true;
+		// } else {
+		// this.matrix[row][col] = UNASSIGNED;
+		// }
+		// }
+		// }
+		// return false;
+		// }
+		// }
+		// }
+		return true;
+		// return false;
+	}
 
 	public boolean isHashLengthSame(List<Integer> list) {
 		Set<Integer> hash = new HashSet<Integer>(list);
@@ -539,6 +607,27 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		return false;
 	}
 
+	private boolean checkCageRule(Cage cage) {
+		int sum = 0;
+		List<Integer> list = new ArrayList<Integer>();
+
+		for (String coord : cage.coordinates) {
+			String[] rc = coord.split(",");
+			int r = Integer.parseInt(rc[0]);
+			int c = Integer.parseInt(rc[1]);
+			if (this.matrix[r][c] != UNASSIGNED) {
+				sum += this.matrix[r][c];
+				list.add(this.matrix[r][c]);
+			}
+
+		}
+		if (sum > cage.value)
+			return false;
+		if (!isHashLengthSame(list))
+			return false;
+		return true;
+	}
+
 	private boolean isGreaterThanCageValueRange(int row, int col, int number) {
 		if (!commonValidate())
 			return false;
@@ -568,6 +657,10 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 			}
 		}
 		return false;
+	}
+
+	private boolean isValidCommon2(int row, int col, int number, Cage cage) {
+		return !isInRow(row, number) && !isInCol(col, number) && !isInBox(row, col, number) && checkCageRule(cage);
 	}
 
 	private boolean isValidCommon(int row, int col, int number) {

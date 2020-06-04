@@ -1,17 +1,31 @@
 package solver;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Cell {
+	protected int cageId;
 	protected int row;
 	protected int col;
-	protected List<Integer> permittedIntegers;
+	protected List<Integer> permittedIntegers = new ArrayList<Integer>();
 	protected int index;
 
-	public Cell(int row, int col, int size) {
+	public Cell(int row, int col, int size, List<List<Integer>> combinationsList, int cageId) {
 		this.index = calculateIndex(row, col, size);
-		this.row=row;
-		this.col=col;
+		setPermittedIntegers(combinationsList);
+		this.row = row;
+		this.col = col;
+		this.cageId = cageId;
+	}
+
+	private void setPermittedIntegers(List<List<Integer>> combinationsList) {
+		Set<Integer> combinationSetSet = new LinkedHashSet<>(this.permittedIntegers);
+		for (List<Integer> combinationList : combinationsList) {
+			combinationSetSet.addAll(combinationList);
+		}
+		this.permittedIntegers = new ArrayList<>(combinationSetSet);
 	}
 
 	private int calculateIndex(int row, int col, int size) {
