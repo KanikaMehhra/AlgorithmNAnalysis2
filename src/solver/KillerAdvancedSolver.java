@@ -30,7 +30,7 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 	// private int numberOfCages;
 	// private SudokuGrid grid;
 	private List<Cage> cages;
-	private int maxTotal;
+	// private int maxTotal;
 	private Map<Cage, List<List<Integer>>> cagesPermutationsMap;
 	// private List<Cage> cagesCovered;
 	private List<Cage> cagesLeft;
@@ -47,7 +47,7 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 		// this.numberOfCages = 0;
 		// this.grid = null;
 		this.cages = new ArrayList<Cage>();
-		this.maxTotal = 0;
+		// this.maxTotal = 0;
 		this.cagesPermutationsMap = new HashMap<Cage, List<List<Integer>>>();
 		// this.cagesCovered = new ArrayList<Cage>();
 		// this.answerPermutations = new ArrayList<List<Integer>>();
@@ -63,9 +63,9 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 		// this.grid = grid;
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		for (int num : this.acceptedNumbers) {
-			this.maxTotal += num;
-		}
+		// for (int num : this.acceptedNumbers) {
+		// this.maxTotal += num;
+		// }
 		this.matrix = grid.getSudokuGrid();
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		// this.numberOfCages = this.cageCoordsWithValuesMap.size();
@@ -91,22 +91,28 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 				for (int permittedValue : cell.permittedIntegers) {
 					for (List<Integer> permutation : this.cages
 							.get(cell.cageId).mapOfPermutationsStartingWithASpecificDigit.get(permittedValue)) {
-						fillCageCoords(this.cages.get(cell.cageId), permutation);
-						if (commonValidate()) {
+						if (validateThePermutation(this.cages.get(cell.cageId), permutation)) {
+							fillCageCoords(this.cages.get(cell.cageId), permutation);
 							if (newSolve(i + 1)) {
 								return true;
 							} else {
 								unFillCageCoords(this.cages.get(cell.cageId));
 							}
-						} else {
-							unFillCageCoords(this.cages.get(cell.cageId));
-							// if(!isInRow(row, number))
-							// break;
 						}
 					}
-					if (permittedValue == cell.permittedIntegers.get(cell.permittedIntegers.size() - 1))
-						return false;
 				}
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean validateThePermutation(Cage cage, List<Integer> permutation) {
+		for (int i = 0; i < permutation.size(); i++) {
+			String[] rc = cage.coordinates.get(i).split(",");
+			int r = Integer.parseInt(rc[0]);
+			int c = Integer.parseInt(rc[1]);
+			if (!isValidCommon(r, c, permutation.get(i))) {
 				return false;
 			}
 		}
@@ -544,37 +550,41 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 	// return true;
 	// }
 	//
-	// private boolean isInRow(int row, int number) {
-	// for (int i = 0; i < this.size; i++) {
-	// if (this.matrix[row][i] == number) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
-	//
-	// private boolean isInCol(int col, int number) {
-	// for (int i = 0; i < this.size; i++) {
-	// if (this.matrix[i][col] == number)
-	// return true;
-	// }
-	// return false;
-	// }
-	//
-	// private boolean isInBox(int row, int col, int number) {
-	// int sqrt = (int) Math.sqrt(this.size);
-	// int r = row - row % sqrt;
-	// int c = col - col % sqrt;
-	//
-	// for (int i = r; i < r + sqrt; i++) {
-	// for (int j = c; j < c + sqrt; j++) {
-	// if (this.matrix[i][j] == number) {
-	// return true;
-	// }
-	// }
-	// }
-	// return false;
-	// }
+	private boolean isInRow(int row, int number) {
+		for (int i = 0; i < this.size; i++) {
+			if (this.matrix[row][i] == number) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isInCol(int col, int number) {
+		for (int i = 0; i < this.size; i++) {
+			if (this.matrix[i][col] == number)
+				return true;
+		}
+		return false;
+	}
+
+	private boolean isInBox(int row, int col, int number) {
+		int sqrt = (int) Math.sqrt(this.size);
+		int r = row - row % sqrt;
+		int c = col - col % sqrt;
+
+		for (int i = r; i < r + sqrt; i++) {
+			for (int j = c; j < c + sqrt; j++) {
+				if (this.matrix[i][j] == number) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isValidCommon(int row, int col, int number) {
+		return !isInRow(row, number) && !isInCol(col, number) && !isInBox(row, col, number);
+	}
 
 	// private boolean checkCageRule(Cage cage) {
 	// int sum = 0;

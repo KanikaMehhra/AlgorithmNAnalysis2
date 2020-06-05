@@ -26,7 +26,6 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	private List<Integer> acceptedNumbers;
 	private Map<List<String>, Integer> cageCoordsWithValuesMap;
 	private List<Cage> cages;
-	private int maxTotal;
 	private Map<Cage, List<List<Integer>>> cagesPermutationsMap;
 	private List<Cage> cagesLeft;
 	private List<Cell> cells;
@@ -37,7 +36,6 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.acceptedNumbers = new ArrayList<Integer>();
 		this.cageCoordsWithValuesMap = new HashMap<List<String>, Integer>();
 		this.cages = new ArrayList<Cage>();
-		this.maxTotal = 0;
 		this.cagesPermutationsMap = new HashMap<Cage, List<List<Integer>>>();
 		this.cagesLeft = new ArrayList<Cage>();
 		this.cells = new ArrayList<Cell>();
@@ -47,17 +45,14 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	public boolean solve(SudokuGrid grid) {
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		for (int num : this.acceptedNumbers) {
-			this.maxTotal += num;
-		}
 		this.matrix = grid.getSudokuGrid();
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		setCagesInfo();
 		Collections.sort(this.cells, new CellIndexComparator());
-		return newSolve(0);
+		return recursiveSolve(0);
 	} // end of solve()
 
-	public boolean newSolve(int cellIndex) {
+	public boolean recursiveSolve(int cellIndex) {
 		for (int i = cellIndex; i < this.cells.size(); i++) {
 			Cell cell = this.cells.get(i);
 			if (this.matrix[cell.row][cell.col] == UNASSIGNED) {
@@ -66,7 +61,7 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 							.get(cell.cageId).mapOfPermutationsStartingWithASpecificDigit.get(permittedValue)) {
 						fillCageCoords(this.cages.get(cell.cageId), permutation);
 						if (commonValidate()) {
-							if (newSolve(i + 1)) {
+							if (recursiveSolve(i + 1)) {
 								return true;
 							} else {
 								unFillCageCoords(this.cages.get(cell.cageId));
