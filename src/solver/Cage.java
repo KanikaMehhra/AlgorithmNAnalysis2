@@ -8,6 +8,7 @@ import java.util.Map;
 public class Cage {
 	protected int value;
 	protected List<String> coordinates;
+	protected List<Cell> cageCells=new ArrayList<Cell>();
 	private int size;
 	private static int count = -1;
 	protected int id;
@@ -35,6 +36,7 @@ public class Cage {
 			int c = Integer.parseInt(rc[1]);
 			Cell cell = new Cell(r, c, this.size, this.combinations, this.id);
 			cells.add(cell);
+			this.cageCells.add(cell);
 		}
 	}
 

@@ -23,6 +23,7 @@ import grid.SudokuGrid;
 public class KillerAdvancedSolver extends KillerSudokuSolver {
 	// TODO: Add attributes as needed.
 	private static final int UNASSIGNED = -1;
+	private Cage smallestValuedCage;
 	private int[][] matrix;
 	private int size;
 	private List<Integer> acceptedNumbers;
@@ -40,6 +41,7 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 
 	public KillerAdvancedSolver() {
 		// TODO: any initialisation you want to implement.
+		this.smallestValuedCage = null;
 		this.matrix = null;
 		this.size = 0;
 		this.acceptedNumbers = new ArrayList<Integer>();
@@ -71,18 +73,72 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 		// this.numberOfCages = this.cageCoordsWithValuesMap.size();
 		setCagesInfo();
 		Collections.sort(this.cells, new CellIndexComparator());
+		// Collections.sort(this.cages, new CageValueComparator());
 		// Arrays.sort(this.cells, Comparator.comparing(Cell::index));
 		// Collections.sort(this.cells);
 		// calculateCombinationPermutation();
 		// cageRowSolver();
 		// cageColSolver();
 		// cageBoxSolver();
-
+//		return newSolve2();
 		// return recursiveSolve();
 		// placeholder
 		// return rSolve();
-		return newSolve(0);
+		 return newSolve(0);
 	} // end of solve()
+
+	private boolean getSmallestValuedCage() {
+		if (this.cagesLeft.size() == 0)
+			return true;
+
+		this.smallestValuedCage = this.cagesLeft.get(0);
+		for (int i = 1; i < this.cagesLeft.size(); i++) {
+			if (this.cagesLeft.get(i).value < this.smallestValuedCage.value) {
+				this.smallestValuedCage = this.cagesLeft.get(i);
+			}
+		}
+		return false;
+	}
+
+	public boolean newSolve2() {
+		boolean result = true;
+		// for (int c = cageNumber; c < this.cages.size(); c++) {
+		// Cage cage = this.cages.get(c);
+		if (getSmallestValuedCage()) {
+			return true;
+		}
+
+		for (Cell cell : this.smallestValuedCage.cageCells) {
+			// Cell cell = this.cells.get(i);
+			// if (this.matrix[cell.row][cell.col] == UNASSIGNED) {
+			for (int permittedValue : cell.permittedIntegers) {
+				for (List<Integer> permutation : this.smallestValuedCage.mapOfPermutationsStartingWithASpecificDigit
+						.get(permittedValue)) {
+					if (validateThePermutation(this.smallestValuedCage, permutation)) {
+						this.cagesLeft.remove(this.smallestValuedCage);
+						Cage previousCage=this.smallestValuedCage;
+						fillCageCoords(this.smallestValuedCage, permutation);
+						if (newSolve2()) {
+							result = true;
+							break;
+//							return true;
+						} else {
+							this.smallestValuedCage=previousCage;
+							this.cagesLeft.remove(this.smallestValuedCage);
+							unFillCageCoords(this.smallestValuedCage);
+						}
+					}
+				}
+			}
+			result=false;
+			break;
+//			return false;
+			// }
+		}
+		// }
+
+		return result;
+	}
 
 	public boolean newSolve(int cellIndex) {
 		for (int i = cellIndex; i < this.cells.size(); i++) {
@@ -157,47 +213,49 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 	// return true;
 	// }
 
-	public boolean commonValidate() {
-		int smallGridSize = (int) Math.sqrt(this.size);
-		for (int[] row : this.matrix) {
-			List<Integer> rowList = Arrays.stream(row).boxed().collect(Collectors.toList());
-			rowList.removeAll(Collections.singleton(UNASSIGNED));
-			// checks first condition
-			if (!this.acceptedNumbers.containsAll(rowList)) {
-				return false;
-			}
-			// checks second condition
-			if (!isHashLengthSame(rowList)) {
-				return false;
-			}
-		}
-
-		for (int j = 0; j < this.size; j++) {
-			List<Integer> smallGridArray = new ArrayList<Integer>();
-			List<Integer> colList = new ArrayList<Integer>();
-
-			for (int i = 0; i < this.size; i++) {
-				colList.add(this.matrix[i][j]);
-
-				smallGridArray.add(i, this.matrix[(j / smallGridSize) * smallGridSize + i / smallGridSize][j
-						* smallGridSize % this.size + i % smallGridSize]);
-			}
-			colList.removeAll(Collections.singleton(UNASSIGNED));
-			smallGridArray.removeAll(Collections.singleton(UNASSIGNED));
-
-			// checks third condition
-			if (!isHashLengthSame(colList)) {
-				return false;
-			}
-			// check fourth condition
-			if (!isHashLengthSame(smallGridArray)) {
-				return false;
-			}
-
-		}
-
-		return true;
-	}
+	// public boolean commonValidate() {
+	// int smallGridSize = (int) Math.sqrt(this.size);
+	// for (int[] row : this.matrix) {
+	// List<Integer> rowList =
+	// Arrays.stream(row).boxed().collect(Collectors.toList());
+	// rowList.removeAll(Collections.singleton(UNASSIGNED));
+	// // checks first condition
+	// if (!this.acceptedNumbers.containsAll(rowList)) {
+	// return false;
+	// }
+	// // checks second condition
+	// if (!isHashLengthSame(rowList)) {
+	// return false;
+	// }
+	// }
+	//
+	// for (int j = 0; j < this.size; j++) {
+	// List<Integer> smallGridArray = new ArrayList<Integer>();
+	// List<Integer> colList = new ArrayList<Integer>();
+	//
+	// for (int i = 0; i < this.size; i++) {
+	// colList.add(this.matrix[i][j]);
+	//
+	// smallGridArray.add(i, this.matrix[(j / smallGridSize) * smallGridSize + i /
+	// smallGridSize][j
+	// * smallGridSize % this.size + i % smallGridSize]);
+	// }
+	// colList.removeAll(Collections.singleton(UNASSIGNED));
+	// smallGridArray.removeAll(Collections.singleton(UNASSIGNED));
+	//
+	// // checks third condition
+	// if (!isHashLengthSame(colList)) {
+	// return false;
+	// }
+	// // check fourth condition
+	// if (!isHashLengthSame(smallGridArray)) {
+	// return false;
+	// }
+	//
+	// }
+	//
+	// return true;
+	// }
 
 	// private boolean rSolve() {
 	// boolean returnValue = true;
