@@ -26,8 +26,6 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 	private List<Integer> acceptedNumbers;
 	private Map<List<String>, Integer> cageCoordsWithValuesMap;
 	private List<Cage> cages;
-	private Map<Cage, List<List<Integer>>> cagesPermutationsMap;
-	private List<Cage> cagesLeft;
 	private List<Cell> cells;
 
 	public KillerBackTrackingSolver() {
@@ -36,8 +34,6 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		this.acceptedNumbers = new ArrayList<Integer>();
 		this.cageCoordsWithValuesMap = new HashMap<List<String>, Integer>();
 		this.cages = new ArrayList<Cage>();
-		this.cagesPermutationsMap = new HashMap<Cage, List<List<Integer>>>();
-		this.cagesLeft = new ArrayList<Cage>();
 		this.cells = new ArrayList<Cell>();
 	} // end of KillerBackTrackingSolver()
 
@@ -144,10 +140,8 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 
 	public void setCagesInfo() {
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
-			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers,
-					this.cagesPermutationsMap, this.cells);
+			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers, this.cells);
 			this.cages.add(cage);
-			this.cagesLeft.add(cage);
 		}
 	}
 } // end of class KillerBackTrackingSolver()

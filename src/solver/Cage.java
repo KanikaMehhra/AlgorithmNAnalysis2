@@ -17,7 +17,7 @@ public class Cage {
 	protected Map<Integer, List<List<Integer>>> mapOfPermutationsStartingWithASpecificDigit = new HashMap<Integer, List<List<Integer>>>();
 
 	public Cage(int value, List<String> coordinates, int size, List<Integer> acceptedNumbers,
-			Map<Cage, List<List<Integer>>> cagesPermutationsMap, List<Cell> cells) {
+			 List<Cell> cells) {
 		this.value = value;
 		this.coordinates = coordinates;
 		this.size = size;

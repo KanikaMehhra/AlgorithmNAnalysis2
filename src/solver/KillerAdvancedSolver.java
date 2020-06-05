@@ -522,8 +522,7 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 
 	public void setCagesInfo() {
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
-			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers,
-					this.cagesPermutationsMap, this.cells);
+			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers, this.cells);
 			this.cages.add(cage);
 			this.cagesLeft.add(cage);
 		}
