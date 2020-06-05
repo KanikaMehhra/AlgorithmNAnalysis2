@@ -44,20 +44,21 @@ public class StdSudokuGrid extends SudokuGrid {
 	public void outputGrid(String filename) throws FileNotFoundException, IOException {
 		if (validate())
 			if (validate())
-			try (PrintWriter writer = new PrintWriter(new File(filename))) {
-				for (int i = 0; i < this.sudokuGridLength; i++) {
-					StringBuilder sb = new StringBuilder();
-					for (int j = 0; j < this.sudokuGridLength; j++) {
-						sb.append(this.sudokuGrid[i][j]);
-						if (j != this.sudokuGridLength - 1)
-							sb.append(",");
+				try (PrintWriter writer = new PrintWriter(new File(filename))) {
+					for (int i = 0; i < this.sudokuGridLength; i++) {
+						StringBuilder sb = new StringBuilder();
+						for (int j = 0; j < this.sudokuGridLength; j++) {
+							sb.append(this.sudokuGrid[i][j]);
+							if (j != this.sudokuGridLength - 1)
+								sb.append(",");
+						}
+						if (i != this.sudokuGridLength - 1)
+							sb.append("\n");
+						writer.write(sb.toString());
 					}
-					sb.append("\n");
-					writer.write(sb.toString());
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 	} // end of outputBoard()
 
 	@Override
