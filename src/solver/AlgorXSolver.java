@@ -24,17 +24,18 @@ public class AlgorXSolver extends StdSudokuSolver {
 	private static final int UNASSIGNED = -1;
 	private static final int CONSTRAINTS = 4;
 	private int[][] matrix;
-	private int size;
+//	private int size;
 	private int smallGridSize;
-	private List<Integer> acceptedNumbers;
+//	private List<Integer> acceptedNumbers;
 	private List<Integer> solutionRows;
 	private Map<Integer, String> rowSolMap;
 	private List<Integer> colsCovered;
 
 	public AlgorXSolver() {
+		super();
 		this.matrix = null;
-		this.size = 0;
-		this.acceptedNumbers = new ArrayList<Integer>();
+//		this.size = 0;
+//		this.acceptedNumbers = new ArrayList<Integer>();
 		this.smallGridSize = 0;
 		this.solutionRows = new ArrayList<Integer>();
 		this.rowSolMap = new HashMap<Integer, String>();

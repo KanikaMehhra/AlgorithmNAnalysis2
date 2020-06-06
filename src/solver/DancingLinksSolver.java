@@ -25,10 +25,11 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	protected List<DancingNode> answer;
 	protected List<DancingNode> result;
 	private List<Integer> colsCovered;
-	private int size;
-	private List<Integer> listOfAcceptedIntegers;
+//	private int size;
+//	private List<Integer> acceptedNumbers;
 
 	public DancingLinksSolver() {
+		super();
 		this.coverMatrix = null;
 		this.masterColumn = null;
 		this.links = null;
@@ -36,15 +37,15 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.answer = new ArrayList<DancingNode>();
 		this.result = new ArrayList<DancingNode>();
 		this.colsCovered = new ArrayList<Integer>();
-		this.listOfAcceptedIntegers = new ArrayList<Integer>();
-		this.size = 0;
+//		this.acceptedNumbers = new ArrayList<Integer>();
+//		this.size = 0;
 
 	} // end of DancingLinksSolver()
 
 	@Override
 	public boolean solve(SudokuGrid grid) {
 		this.size = grid.getSudokuGridLength();
-		this.listOfAcceptedIntegers = grid.getListOfvalidIntegers();
+		this.acceptedNumbers = grid.getListOfvalidIntegers();
 		ExactCoverTransformation transform = new ExactCoverTransformation(grid);
 		this.coverMatrix = transform.createCoverMatrix(grid.getSudokuGrid());
 		this.links = new DancingLinks(this.coverMatrix);
@@ -69,7 +70,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 				valueNumber = majorRow - (rowNumber * this.size * this.size);
 			}
 
-			int value = this.listOfAcceptedIntegers.get(valueNumber);
+			int value = this.acceptedNumbers.get(valueNumber);
 			grid[rowNumber][colNumber] = value;
 		}
 	}

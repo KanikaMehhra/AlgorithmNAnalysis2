@@ -18,13 +18,14 @@ import grid.SudokuGrid;
 public class BackTrackingSolver extends StdSudokuSolver {
 	private static final int UNASSIGNED = -1;
 	private int[][] matrix;
-	private int size;
-	private List<Integer> acceptedNumbers;
+//	private int size;
+//	private List<Integer> acceptedNumbers;
 
 	public BackTrackingSolver() {
+		super();
 		this.matrix = null;
-		this.size = 0;
-		this.acceptedNumbers = new ArrayList<Integer>();
+//		this.size = 0;
+//		this.acceptedNumbers = new ArrayList<Integer>();
 	} // end of BackTrackingSolver()
 
 	@Override
