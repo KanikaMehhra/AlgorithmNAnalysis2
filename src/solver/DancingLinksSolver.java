@@ -25,8 +25,6 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	protected List<DancingNode> answer;
 	protected List<DancingNode> result;
 	private List<Integer> colsCovered;
-//	private int size;
-//	private List<Integer> acceptedNumbers;
 
 	public DancingLinksSolver() {
 		super();
@@ -37,8 +35,6 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		this.answer = new ArrayList<DancingNode>();
 		this.result = new ArrayList<DancingNode>();
 		this.colsCovered = new ArrayList<Integer>();
-//		this.acceptedNumbers = new ArrayList<Integer>();
-//		this.size = 0;
 
 	} // end of DancingLinksSolver()
 

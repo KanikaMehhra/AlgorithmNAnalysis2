@@ -25,7 +25,7 @@ public class ExactCoverTransformation {
 
 	}
 
-	private int getIndexFromCoverMatrix(int row, int col, int num) {
+	protected int getIndexFromCoverMatrix(int row, int col, int num) {
 		return (row) * this.size * this.size + (col) * this.size + (num);
 	}
 
@@ -85,7 +85,7 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
-	private int[][] transformSudokuGridToCoverMatrix() {
+	protected int[][] transformSudokuGridToCoverMatrix() {
 		int[][] coverMatrix = new int[this.size * this.size * this.size][this.size * this.size * CONSTRAINTS];
 		int head = 0;
 		head = cellConstraintsCreation(coverMatrix, head);
@@ -112,8 +112,9 @@ public class ExactCoverTransformation {
 							int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
 							int boxConstraintColumnToBeCovered = getBoxConstraintColumn(row, col, num, index);
 							int bigRow = getIndexFromCoverMatrix(row, col, num);
-							cover(bigRow, cellConstraintColumnToBeCovered, rowConstraintColumnToBeCovered,
-									colConstraintColumnToBeCovered, boxConstraintColumnToBeCovered);
+							cover(this.colsCovered, this.matrix, bigRow, cellConstraintColumnToBeCovered,
+									rowConstraintColumnToBeCovered, colConstraintColumnToBeCovered,
+									boxConstraintColumnToBeCovered);
 
 						}
 					}
@@ -124,19 +125,19 @@ public class ExactCoverTransformation {
 		return this.matrix;
 	}
 
-	private int getCellConstraintColumn(int row, int col) {
+	protected int getCellConstraintColumn(int row, int col) {
 		return row * this.size + col;
 	}
 
-	private int getRowConstraintColumn(int row, int num) {
+	protected int getRowConstraintColumn(int row, int num) {
 		return this.size * this.size + row * this.size + num;
 	}
 
-	private int getColConstraintColumn(int col, int num) {
+	protected int getColConstraintColumn(int col, int num) {
 		return 2 * this.size * this.size + col * this.size + num;
 	}
 
-	private int getBoxConstraintColumn(int row, int col, int num, int index) {
+	protected int getBoxConstraintColumn(int row, int col, int num, int index) {
 		// calculation for box number starting from 0;
 		int boxwidth = this.smallGridSize; /* Width of a small box */
 		int boxheight = this.smallGridSize; /* Height of a small box */
@@ -155,28 +156,29 @@ public class ExactCoverTransformation {
 		return 3 * this.size * this.size + box * this.size + num;
 	}
 
-	private void cover(int bigRow, int cellConstraintColumnToBeCovered, int rowConstraintColumnToBeCovered,
-			int colConstraintColumnToBeCovered, int boxConstraintColumnToBeCovered) {
-		Arrays.fill(this.matrix[bigRow], 0);
-		for (int i = 0; i < this.matrix.length; i++) {
-			if (this.matrix[i][cellConstraintColumnToBeCovered] == 1) {
-				Arrays.fill(this.matrix[i], 0);
+	protected void cover(List<Integer> colsCovered, int[][] matrix, int bigRow, int cellConstraintColumnToBeCovered,
+			int rowConstraintColumnToBeCovered, int colConstraintColumnToBeCovered,
+			int boxConstraintColumnToBeCovered) {
+		Arrays.fill(matrix[bigRow], 0);
+		for (int i = 0; i < matrix.length; i++) {
+			if (matrix[i][cellConstraintColumnToBeCovered] == 1) {
+				Arrays.fill(matrix[i], 0);
 			}
-			if (this.matrix[i][rowConstraintColumnToBeCovered] == 1) {
-				Arrays.fill(this.matrix[i], 0);
+			if (matrix[i][rowConstraintColumnToBeCovered] == 1) {
+				Arrays.fill(matrix[i], 0);
 			}
-			if (this.matrix[i][colConstraintColumnToBeCovered] == 1) {
-				Arrays.fill(this.matrix[i], 0);
+			if (matrix[i][colConstraintColumnToBeCovered] == 1) {
+				Arrays.fill(matrix[i], 0);
 			}
-			if (this.matrix[i][boxConstraintColumnToBeCovered] == 1) {
-				Arrays.fill(this.matrix[i], 0);
+			if (matrix[i][boxConstraintColumnToBeCovered] == 1) {
+				Arrays.fill(matrix[i], 0);
 
 			}
 		}
-		this.colsCovered.add(cellConstraintColumnToBeCovered);
-		this.colsCovered.add(rowConstraintColumnToBeCovered);
-		this.colsCovered.add(colConstraintColumnToBeCovered);
-		this.colsCovered.add(boxConstraintColumnToBeCovered);
+		colsCovered.add(cellConstraintColumnToBeCovered);
+		colsCovered.add(rowConstraintColumnToBeCovered);
+		colsCovered.add(colConstraintColumnToBeCovered);
+		colsCovered.add(boxConstraintColumnToBeCovered);
 	}
 
 }
