@@ -17,36 +17,11 @@ import grid.SudokuGrid;
  */
 
 public class KillerAdvancedSolver extends KillerSudokuSolver {
-	private static final int UNASSIGNED = -1;
 	private static final int START_INDEX = 0;
-	private int[][] matrix;
-	private int size;
-	private List<Integer> acceptedNumbers;
-	private Map<List<String>, Integer> cageCoordsWithValuesMap;
-	private List<Cage> cages;
-	private List<Cage> cagesLeft;
-	private List<Cell> cells;
 
 	public KillerAdvancedSolver() {
-		this.matrix = null;
-		this.size = 0;
-		this.acceptedNumbers = new ArrayList<Integer>();
-		this.cageCoordsWithValuesMap = new HashMap<List<String>, Integer>();
-		this.cages = new ArrayList<Cage>();
-		this.cagesLeft = new ArrayList<Cage>();
-		this.cells = new ArrayList<Cell>();
+		super();
 	} // end of KillerBackTrackingSolver()
-
-	@Override
-	public boolean solve(SudokuGrid grid) {
-		this.size = grid.getSudokuGridLength();
-		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		this.matrix = grid.getSudokuGrid();
-		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
-		setCagesInfo();
-		Collections.sort(this.cells, new CellIndexComparator());
-		return recursiveSolve(START_INDEX);
-	} // end of solve()
 
 	public boolean recursiveSolve(int cellIndex) {
 		for (int i = cellIndex; i < this.cells.size(); i++) {
@@ -81,32 +56,6 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 			}
 		}
 		return true;
-	}
-
-	private void fillCageCoords(Cage cage, List<Integer> permutation) {
-		for (int i = 0; i < permutation.size(); i++) {
-			String[] rc = cage.coordinates.get(i).split(",");
-			int r = Integer.parseInt(rc[0]);
-			int c = Integer.parseInt(rc[1]);
-			this.matrix[r][c] = permutation.get(i);
-		}
-	}
-
-	private void unFillCageCoords(Cage cage) {
-		for (String cageCoord : cage.coordinates) {
-			String[] rc = cageCoord.split(",");
-			int r = Integer.parseInt(rc[0]);
-			int c = Integer.parseInt(rc[1]);
-			this.matrix[r][c] = UNASSIGNED;
-		}
-	}
-
-	public void setCagesInfo() {
-		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
-			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers, this.cells);
-			this.cages.add(cage);
-			this.cagesLeft.add(cage);
-		}
 	}
 
 	private boolean isInRow(int row, int number) {
