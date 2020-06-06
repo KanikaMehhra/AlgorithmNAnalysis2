@@ -1,41 +1,24 @@
 package solver;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import grid.SudokuGrid;
 
 public class ExactCoverTransformation {
 	private static final int UNASSIGNED = -1;
 	private static final int CONSTRAINTS = 4;
-	private int[][] matrix;
-	private int size;
-	private int smallGridSize;
-	private List<Integer> acceptedNumbers;
-	protected List<Integer> colsCovered;
 
-	public ExactCoverTransformation(SudokuGrid grid) {
-		this.size = grid.getSudokuGridLength();
-		this.smallGridSize = (int) Math.sqrt(this.size);
-		this.matrix = null;
-		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		this.colsCovered = new ArrayList<Integer>();
-
+	protected int getIndexFromCoverMatrix(int size, int row, int col, int num) {
+		return (row) * size * size + (col) * size + (num);
 	}
 
-	protected int getIndexFromCoverMatrix(int row, int col, int num) {
-		return (row) * this.size * this.size + (col) * this.size + (num);
-	}
-
-	private int boxConstraintsCreation(int[][] matrix, int head) {
-		for (int row = 0; row < this.size; row += this.smallGridSize) {
-			for (int col = 0; col < this.size; col += this.smallGridSize) {
-				for (int num = 0; num < this.size; num++, head++) {
-					for (int rowDelValue = 0; rowDelValue < this.smallGridSize; rowDelValue++) {
-						for (int colDelValue = 0; colDelValue < this.smallGridSize; colDelValue++) {
-							int index = getIndexFromCoverMatrix(row + rowDelValue, col + colDelValue, num);
+	private int boxConstraintsCreation(int[][] matrix, int head, int size) {
+		int smallGridSize = (int) Math.sqrt(size);
+		for (int row = 0; row < size; row += smallGridSize) {
+			for (int col = 0; col < size; col += smallGridSize) {
+				for (int num = 0; num < size; num++, head++) {
+					for (int rowDelValue = 0; rowDelValue < smallGridSize; rowDelValue++) {
+						for (int colDelValue = 0; colDelValue < smallGridSize; colDelValue++) {
+							int index = getIndexFromCoverMatrix(size, row + rowDelValue, col + colDelValue, num);
 							matrix[index][head] = 1;
 						}
 					}
@@ -46,11 +29,11 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
-	private int columnConstraintsCreation(int[][] matrix, int head) {
-		for (int col = 0; col < this.size; col++) {
-			for (int num = 0; num < this.size; num++, head++) {
-				for (int row = 0; row < this.size; row++) {
-					int index = getIndexFromCoverMatrix(row, col, num);
+	private int columnConstraintsCreation(int[][] matrix, int head, int size) {
+		for (int col = 0; col < size; col++) {
+			for (int num = 0; num < size; num++, head++) {
+				for (int row = 0; row < size; row++) {
+					int index = getIndexFromCoverMatrix(size, row, col, num);
 					matrix[index][head] = 1;
 				}
 			}
@@ -59,11 +42,11 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
-	private int rowConstraintsCreation(int[][] matrix, int head) {
-		for (int row = 0; row < this.size; row++) {
-			for (int num = 0; num < this.size; num++, head++) {
-				for (int col = 0; col < this.size; col++) {
-					int index = getIndexFromCoverMatrix(row, col, num);
+	private int rowConstraintsCreation(int[][] matrix, int head, int size) {
+		for (int row = 0; row < size; row++) {
+			for (int num = 0; num < size; num++, head++) {
+				for (int col = 0; col < size; col++) {
+					int index = getIndexFromCoverMatrix(size, row, col, num);
 					matrix[index][head] = 1;
 				}
 			}
@@ -72,11 +55,11 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
-	private int cellConstraintsCreation(int[][] matrix, int head) {
-		for (int row = 0; row < this.size; row++) {
-			for (int col = 0; col < this.size; col++, head++) {
-				for (int num = 0; num < this.size; num++) {
-					int index = getIndexFromCoverMatrix(row, col, num);
+	private int cellConstraintsCreation(int[][] matrix, int head, int size) {
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++, head++) {
+				for (int num = 0; num < size; num++) {
+					int index = getIndexFromCoverMatrix(size, row, col, num);
 					matrix[index][head] = 1;
 				}
 			}
@@ -85,34 +68,35 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
-	protected int[][] transformSudokuGridToCoverMatrix() {
-		int[][] coverMatrix = new int[this.size * this.size * this.size][this.size * this.size * CONSTRAINTS];
+	protected int[][] transformSudokuGridToCoverMatrix(int size) {
+		int[][] coverMatrix = new int[size * size * size][size * size * CONSTRAINTS];
 		int head = 0;
-		head = cellConstraintsCreation(coverMatrix, head);
-		head = rowConstraintsCreation(coverMatrix, head);
-		head = columnConstraintsCreation(coverMatrix, head);
-		boxConstraintsCreation(coverMatrix, head);
+		head = cellConstraintsCreation(coverMatrix, head, size);
+		head = rowConstraintsCreation(coverMatrix, head, size);
+		head = columnConstraintsCreation(coverMatrix, head, size);
+		boxConstraintsCreation(coverMatrix, head, size);
 		return coverMatrix;
 	}
 
-	protected int[][] createCoverMatrix(int[][] grid) {
-		this.matrix = transformSudokuGridToCoverMatrix();
+	protected int[][] createCoverMatrix(int[][] grid, int size, List<Integer> acceptedNumbers,
+			List<Integer> colsCovered) {
+		int[][] coverMatrix = transformSudokuGridToCoverMatrix(size);
 		// cover the rows and columns associated with the given hints in the initial
 		// sudoku grid.
 		int index = 0;
-		for (int row = 0; row < this.size; row++) {
-			for (int col = 0; col < this.size; col++) {
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
 				int value = grid[row][col];
 
 				if (value != UNASSIGNED) {
-					for (int num = 0; num < this.size; num++) {
-						if (this.acceptedNumbers.get(num) == value) {
-							int cellConstraintColumnToBeCovered = getCellConstraintColumn(row, col);
-							int rowConstraintColumnToBeCovered = getRowConstraintColumn(row, num);
-							int colConstraintColumnToBeCovered = getColConstraintColumn(col, num);
-							int boxConstraintColumnToBeCovered = getBoxConstraintColumn(row, col, num, index);
-							int bigRow = getIndexFromCoverMatrix(row, col, num);
-							cover(this.colsCovered, this.matrix, bigRow, cellConstraintColumnToBeCovered,
+					for (int num = 0; num < size; num++) {
+						if (acceptedNumbers.get(num) == value) {
+							int cellConstraintColumnToBeCovered = getCellConstraintColumn(size, row, col);
+							int rowConstraintColumnToBeCovered = getRowConstraintColumn(size, row, num);
+							int colConstraintColumnToBeCovered = getColConstraintColumn(size, col, num);
+							int boxConstraintColumnToBeCovered = getBoxConstraintColumn(size, row, col, num, index);
+							int bigRow = getIndexFromCoverMatrix(size, row, col, num);
+							cover(colsCovered, coverMatrix, bigRow, cellConstraintColumnToBeCovered,
 									rowConstraintColumnToBeCovered, colConstraintColumnToBeCovered,
 									boxConstraintColumnToBeCovered);
 
@@ -122,26 +106,27 @@ public class ExactCoverTransformation {
 				index++;
 			}
 		}
-		return this.matrix;
+		return coverMatrix;
 	}
 
-	protected int getCellConstraintColumn(int row, int col) {
-		return row * this.size + col;
+	protected int getCellConstraintColumn(int size, int row, int col) {
+		return row * size + col;
 	}
 
-	protected int getRowConstraintColumn(int row, int num) {
-		return this.size * this.size + row * this.size + num;
+	protected int getRowConstraintColumn(int size, int row, int num) {
+		return size * size + row * size + num;
 	}
 
-	protected int getColConstraintColumn(int col, int num) {
-		return 2 * this.size * this.size + col * this.size + num;
+	protected int getColConstraintColumn(int size, int col, int num) {
+		return 2 * size * size + col * size + num;
 	}
 
-	protected int getBoxConstraintColumn(int row, int col, int num, int index) {
+	protected int getBoxConstraintColumn(int size, int row, int col, int num, int index) {
+		int smallGridSize = (int) Math.sqrt(size);
 		// calculation for box number starting from 0;
-		int boxwidth = this.smallGridSize; /* Width of a small box */
-		int boxheight = this.smallGridSize; /* Height of a small box */
-		int hboxes = this.smallGridSize;/* Boxes horizontally */
+		int boxwidth = smallGridSize; /* Width of a small box */
+		int boxheight = smallGridSize; /* Height of a small box */
+		int hboxes = smallGridSize;/* Boxes horizontally */
 		// int vboxes = this.smallGridSize; /* Boxes vertically */
 		int width = boxwidth * hboxes;
 		// int height = boxheight * vboxes;
@@ -153,7 +138,7 @@ public class ExactCoverTransformation {
 		// int innerx = x % boxwidth;
 		int box = boxx + hboxes * boxy;
 
-		return 3 * this.size * this.size + box * this.size + num;
+		return 3 * size * size + box * size + num;
 	}
 
 	protected void cover(List<Integer> colsCovered, int[][] matrix, int bigRow, int cellConstraintColumnToBeCovered,

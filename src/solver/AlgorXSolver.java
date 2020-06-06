@@ -16,7 +16,6 @@ import grid.SudokuGrid;
  * Algorithm X solver for standard Sudoku.
  */
 public class AlgorXSolver extends StdSudokuSolver {
-	private static final int UNASSIGNED = -1;
 	private int[][] matrix;
 	private List<Integer> solutionRows;
 	private Map<Integer, String> rowSolMap;
@@ -34,10 +33,10 @@ public class AlgorXSolver extends StdSudokuSolver {
 
 	@Override
 	public boolean solve(SudokuGrid grid) {
-		this.transform = new ExactCoverTransformation(grid);
+		this.transform = new ExactCoverTransformation();
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		createCoverMatrix(grid.getSudokuGrid());
+		this.createCoverMatrix(grid.getSudokuGrid());
 		if (recursiveSolve()) {
 			fillGridWithSolution(grid.getSudokuGrid());
 			return true;
@@ -137,10 +136,10 @@ public class AlgorXSolver extends StdSudokuSolver {
 			}
 			// calculate the columns that satisfy the row selected s the solution for the
 			// selected column constraint.
-			int cellConstraintColumnToBeCovered = this.transform.getCellConstraintColumn(row, col);
-			int rowConstraintColumnToBeCovered = this.transform.getRowConstraintColumn(row, num);
-			int colConstraintColumnToBeCovered = this.transform.getColConstraintColumn(col, num);
-			int boxConstraintColumnToBeCovered = this.transform.getBoxConstraintColumn(row, col, num, index);
+			int cellConstraintColumnToBeCovered = this.transform.getCellConstraintColumn(this.size, row, col);
+			int rowConstraintColumnToBeCovered = this.transform.getRowConstraintColumn(this.size, row, num);
+			int colConstraintColumnToBeCovered = this.transform.getColConstraintColumn(this.size, col, num);
+			int boxConstraintColumnToBeCovered = this.transform.getBoxConstraintColumn(this.size, row, col, num, index);
 			int[][] previousMatrix = this.matrix;
 			this.transform.cover(this.colsCovered, this.matrix, suspectedSolRows.get(i),
 					cellConstraintColumnToBeCovered, rowConstraintColumnToBeCovered, colConstraintColumnToBeCovered,
@@ -164,7 +163,6 @@ public class AlgorXSolver extends StdSudokuSolver {
 	}
 
 	private void createCoverMatrix(int[][] grid) {
-		this.matrix = this.transform.transformSudokuGridToCoverMatrix();
 		int v = 0;
 		for (int row = 0; row < this.size; row++) {
 			for (int col = 0; col < this.size; col++) {
@@ -174,30 +172,6 @@ public class AlgorXSolver extends StdSudokuSolver {
 				}
 			}
 		}
-		// cover the rows and columns associated with the given hints in the initial
-		// sudoku grid.
-		int index = 0;
-		for (int row = 0; row < this.size; row++) {
-			for (int col = 0; col < this.size; col++) {
-				int value = grid[row][col];
-
-				if (value != UNASSIGNED) {
-					for (int num = 0; num < this.size; num++) {
-						if (this.acceptedNumbers.get(num) == value) {
-							int cellConstraintColumnToBeCovered = this.transform.getCellConstraintColumn(row, col);
-							int rowConstraintColumnToBeCovered = this.transform.getRowConstraintColumn(row, num);
-							int colConstraintColumnToBeCovered = this.transform.getColConstraintColumn(col, num);
-							int boxConstraintColumnToBeCovered = this.transform.getBoxConstraintColumn(row, col, num,
-									index);
-							int bigRow = this.transform.getIndexFromCoverMatrix(row, col, num);
-							this.transform.cover(this.colsCovered, this.matrix, bigRow, cellConstraintColumnToBeCovered,
-									rowConstraintColumnToBeCovered, colConstraintColumnToBeCovered,
-									boxConstraintColumnToBeCovered);
-						}
-					}
-				}
-				index++;
-			}
-		}
+		this.matrix = this.transform.createCoverMatrix(grid, this.size, this.acceptedNumbers, this.colsCovered);
 	}
 } // end of class AlgorXSolver

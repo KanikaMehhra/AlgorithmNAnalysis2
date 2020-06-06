@@ -4,12 +4,6 @@
 
 package solver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import grid.SudokuGrid;
 
 /**
@@ -18,14 +12,10 @@ import grid.SudokuGrid;
 public class BackTrackingSolver extends StdSudokuSolver {
 	private static final int UNASSIGNED = -1;
 	private int[][] matrix;
-//	private int size;
-//	private List<Integer> acceptedNumbers;
 
 	public BackTrackingSolver() {
 		super();
 		this.matrix = null;
-//		this.size = 0;
-//		this.acceptedNumbers = new ArrayList<Integer>();
 	} // end of BackTrackingSolver()
 
 	@Override

@@ -5,13 +5,7 @@
 package solver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import grid.SudokuGrid;
 
 /**
@@ -42,11 +36,11 @@ public class DancingLinksSolver extends StdSudokuSolver {
 	public boolean solve(SudokuGrid grid) {
 		this.size = grid.getSudokuGridLength();
 		this.acceptedNumbers = grid.getListOfvalidIntegers();
-		ExactCoverTransformation transform = new ExactCoverTransformation(grid);
-		this.coverMatrix = transform.createCoverMatrix(grid.getSudokuGrid());
+		ExactCoverTransformation transform = new ExactCoverTransformation();
+		this.coverMatrix = transform.createCoverMatrix(grid.getSudokuGrid(), this.size, this.acceptedNumbers,
+				this.colsCovered);
 		this.links = new DancingLinks(this.coverMatrix);
 		this.masterColumn = this.links.masterColumn;
-		this.colsCovered = transform.colsCovered;
 		if (recursiveSolve()) {
 			fillGridWithSolution(grid.getSudokuGrid());
 			return true;
