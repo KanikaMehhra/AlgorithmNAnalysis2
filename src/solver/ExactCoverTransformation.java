@@ -7,10 +7,12 @@ public class ExactCoverTransformation {
 	private static final int UNASSIGNED = -1;
 	private static final int CONSTRAINTS = 4;
 
+	// Returns the required row number from the cover matrix.
 	protected int getIndexFromCoverMatrix(int size, int row, int col, int num) {
 		return (row) * size * size + (col) * size + (num);
 	}
 
+	// Creates the columns with box-constraints in cover matrix.
 	private int boxConstraintsCreation(int[][] matrix, int head, int size) {
 		int smallGridSize = (int) Math.sqrt(size);
 		for (int row = 0; row < size; row += smallGridSize) {
@@ -25,10 +27,10 @@ public class ExactCoverTransformation {
 				}
 			}
 		}
-
 		return head;
 	}
 
+	// Creates the columns with column-constraints in cover matrix.
 	private int columnConstraintsCreation(int[][] matrix, int head, int size) {
 		for (int col = 0; col < size; col++) {
 			for (int num = 0; num < size; num++, head++) {
@@ -42,6 +44,7 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
+	// Creates the columns with row-constraints in cover matrix.
 	private int rowConstraintsCreation(int[][] matrix, int head, int size) {
 		for (int row = 0; row < size; row++) {
 			for (int num = 0; num < size; num++, head++) {
@@ -55,6 +58,7 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
+	// Creates the columns with cell-constraints in cover matrix.
 	private int cellConstraintsCreation(int[][] matrix, int head, int size) {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++, head++) {
@@ -68,6 +72,7 @@ public class ExactCoverTransformation {
 		return head;
 	}
 
+	// Returns the initially created cover matrix.
 	protected int[][] transformSudokuGridToCoverMatrix(int size) {
 		int[][] coverMatrix = new int[size * size * size][size * size * CONSTRAINTS];
 		int head = 0;
@@ -78,6 +83,8 @@ public class ExactCoverTransformation {
 		return coverMatrix;
 	}
 
+	// Returns the cover matrix after considering the provided hints in the given
+	// sudoku grid.
 	protected int[][] createCoverMatrix(int[][] grid, int size, List<Integer> acceptedNumbers,
 			List<Integer> colsCovered) {
 		int[][] coverMatrix = transformSudokuGridToCoverMatrix(size);
@@ -109,18 +116,26 @@ public class ExactCoverTransformation {
 		return coverMatrix;
 	}
 
+	// Returns the required column number from the cover matrix with specific Cell
+	// constraint.
 	protected int getCellConstraintColumn(int size, int row, int col) {
 		return row * size + col;
 	}
 
+	// Returns the required column number from the cover matrix with specific Row
+	// constraint.
 	protected int getRowConstraintColumn(int size, int row, int num) {
 		return size * size + row * size + num;
 	}
 
+	// Returns the required column number from the cover matrix with specific Column
+	// constraint.
 	protected int getColConstraintColumn(int size, int col, int num) {
 		return 2 * size * size + col * size + num;
 	}
 
+	// Returns the required column number from the cover matrix with specific Box
+	// constraint.
 	protected int getBoxConstraintColumn(int size, int row, int col, int num, int index) {
 		int smallGridSize = (int) Math.sqrt(size);
 		// calculation for box number starting from 0;
@@ -141,6 +156,8 @@ public class ExactCoverTransformation {
 		return 3 * size * size + box * size + num;
 	}
 
+	// Covers the columns and rows of the cover matrix which are added to the
+	// solution rows.
 	protected void cover(List<Integer> colsCovered, int[][] matrix, int bigRow, int cellConstraintColumnToBeCovered,
 			int rowConstraintColumnToBeCovered, int colConstraintColumnToBeCovered,
 			int boxConstraintColumnToBeCovered) {

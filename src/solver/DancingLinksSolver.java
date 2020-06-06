@@ -48,6 +48,7 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		return false;
 	} // end of solve()
 
+	// Converts the solution rows to fill the sudoku.
 	private void fillGridWithSolution(int[][] grid) {
 		for (DancingNode node : this.answer) {
 			int majorRow = node.number;
@@ -65,6 +66,8 @@ public class DancingLinksSolver extends StdSudokuSolver {
 		}
 	}
 
+	// Checks the existence of ColumnNode with minimum number of DancingNodes
+	// associated with it.
 	private boolean selectMinColumnNodeConstraint() {
 		if (this.colsCovered.size() == this.coverMatrix[0].length) {
 			this.masterColumn.right = this.masterColumn;

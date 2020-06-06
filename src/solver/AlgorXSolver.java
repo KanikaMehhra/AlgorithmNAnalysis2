@@ -44,7 +44,7 @@ public class AlgorXSolver extends StdSudokuSolver {
 		return false;
 	} // end of solve()
 
-	// converts the solution rows to fill the sudoku.
+	// Converts the solution rows to fill the sudoku.
 	private void fillGridWithSolution(int[][] grid) {
 		for (int solRow : this.solutionRows) {
 			String[] splitSolRow = this.rowSolMap.get(solRow).split(",");
@@ -162,6 +162,7 @@ public class AlgorXSolver extends StdSudokuSolver {
 		return result;
 	}
 
+	// Creates the cover matrix for the given sudoku matrix.
 	private void createCoverMatrix(int[][] grid) {
 		int v = 0;
 		for (int row = 0; row < this.size; row++) {

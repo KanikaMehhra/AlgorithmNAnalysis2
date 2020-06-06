@@ -27,7 +27,7 @@ public abstract class KillerSudokuSolver extends SudokuSolver {
 	protected Map<List<String>, Integer> cageCoordsWithValuesMap;
 	protected List<Cage> cages;
 	protected List<Cell> cells;
-	
+
 	public KillerSudokuSolver() {
 		this.matrix = null;
 		this.size = 0;
@@ -36,7 +36,7 @@ public abstract class KillerSudokuSolver extends SudokuSolver {
 		this.cages = new ArrayList<Cage>();
 		this.cells = new ArrayList<Cell>();
 	}
-	
+
 	@Override
 	public boolean solve(SudokuGrid grid) {
 		this.size = grid.getSudokuGridLength();
@@ -47,7 +47,8 @@ public abstract class KillerSudokuSolver extends SudokuSolver {
 		Collections.sort(this.cells, new CellIndexComparator());
 		return recursiveSolve(START_INDEX);
 	} // end of solve()
-	
+
+	// Fills the selected cage with the selected permutation of numbers.
 	protected void fillCageCoords(Cage cage, List<Integer> permutation) {
 		for (int i = 0; i < permutation.size(); i++) {
 			String[] rc = cage.coordinates.get(i).split(",");
@@ -57,6 +58,7 @@ public abstract class KillerSudokuSolver extends SudokuSolver {
 		}
 	}
 
+	// Unfills the selected cage with the selected permutation of numbers.
 	protected void unFillCageCoords(Cage cage) {
 		for (String cageCoord : cage.coordinates) {
 			String[] rc = cageCoord.split(",");
@@ -66,13 +68,14 @@ public abstract class KillerSudokuSolver extends SudokuSolver {
 		}
 	}
 
+	// Creates the cages and the cells of the provided matrix.
 	protected void setCagesInfo() {
 		for (Map.Entry<List<String>, Integer> entry : this.cageCoordsWithValuesMap.entrySet()) {
 			Cage cage = new Cage(entry.getValue(), entry.getKey(), this.size, this.acceptedNumbers, this.cells);
 			this.cages.add(cage);
 		}
 	}
-	
+
 	public abstract boolean recursiveSolve(int cellIndex);
 
 } // end of class KillerSudokuSolver

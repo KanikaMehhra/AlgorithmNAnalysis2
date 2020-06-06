@@ -47,6 +47,7 @@ public class BackTrackingSolver extends StdSudokuSolver {
 		return true;
 	}
 
+	// Checks the uniqueness of the selected number in a row.
 	private boolean isInRow(int row, int number) {
 		for (int i = 0; i < this.size; i++) {
 			if (this.matrix[row][i] == number) {
@@ -56,6 +57,7 @@ public class BackTrackingSolver extends StdSudokuSolver {
 		return false;
 	}
 
+	// Checks the uniqueness of the selected number in a column.
 	private boolean isInCol(int col, int number) {
 		for (int i = 0; i < this.size; i++) {
 			if (this.matrix[i][col] == number)
@@ -64,6 +66,7 @@ public class BackTrackingSolver extends StdSudokuSolver {
 		return false;
 	}
 
+	// Checks the uniqueness of the selected number in a box.
 	private boolean isInBox(int row, int col, int number) {
 		int sqrt = (int) Math.sqrt(this.size);
 		int r = row - row % sqrt;
@@ -79,6 +82,7 @@ public class BackTrackingSolver extends StdSudokuSolver {
 		return false;
 	}
 
+	// Checks the validation of the selected number in a sudoku.
 	private boolean isValidCommon(int row, int col, int number) {
 		return !isInRow(row, number) && !isInCol(col, number) && !isInBox(row, col, number);
 	}

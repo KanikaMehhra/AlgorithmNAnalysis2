@@ -49,11 +49,13 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 		return true;
 	}
 
+	// Checks for duplicates in a list of integers.
 	public boolean isHashLengthSame(List<Integer> list) {
 		Set<Integer> hash = new HashSet<Integer>(list);
 		return (hash.size() == list.size());
 	}
 
+	// Checks the validity of the current suduku.
 	public boolean commonValidate() {
 		int smallGridSize = (int) Math.sqrt(this.size);
 		for (int[] row : this.matrix) {

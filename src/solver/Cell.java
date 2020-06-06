@@ -19,6 +19,8 @@ public class Cell {
 		this.cageId = cageId;
 	}
 
+	// Calculates the index placement of the cell in the original matrix which acts
+	// as this cell's id.
 	private int calculateIndex(int row, int col, int size) {
 		int index = -1;
 		boolean flag = false;

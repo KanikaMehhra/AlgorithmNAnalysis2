@@ -29,6 +29,8 @@ public class Cage {
 		createCells(cells, setPermittedIntegers());
 	}
 
+	// Provides the union of all the combinations that this cage contains and store
+	// in the Cells object.
 	private List<Integer> setPermittedIntegers() {
 		List<Integer> permittedIntegers = new ArrayList<Integer>();
 		Set<Integer> combinationSetSet = new LinkedHashSet<>(permittedIntegers);
@@ -39,6 +41,8 @@ public class Cage {
 		return permittedIntegers;
 	}
 
+	// Creates and adds the cells to the cells list in the main killerSudokuSolver
+	// that are contained in this cage.
 	private void createCells(List<Cell> cells, List<Integer> permittedIntegers) {
 		for (String cageCoord : this.coordinates) {
 			String[] rc = cageCoord.split(",");
@@ -49,6 +53,7 @@ public class Cage {
 		}
 	}
 
+	// Sets the permutations of all the combinations that this cage permits.
 	private void permuteAllCombinations() {
 		for (List<Integer> combination : this.combinations) {
 			List<List<Integer>> permute = permute(combination);
@@ -65,6 +70,7 @@ public class Cage {
 		}
 	}
 
+	// Creates the permutations of the given combination of integers.
 	public List<List<Integer>> permute(List<Integer> combination) {
 		List<List<Integer>> permutations = new ArrayList<>();
 		permutationHelper(0, combination, permutations);
@@ -94,6 +100,7 @@ public class Cage {
 		combination.set(j, temp);
 	}
 
+	// Creates the combinations of the numbers permitted in this cage.
 	public List<List<Integer>> getCombinations(int k, int n) {
 		List<List<Integer>> combinations = new ArrayList<List<Integer>>();
 		List<Integer> currCombination = new ArrayList<Integer>();
