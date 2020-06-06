@@ -53,17 +53,18 @@ public class KillerBackTrackingSolver extends KillerSudokuSolver {
 			Cell cell = this.cells.get(i);
 			if (this.matrix[cell.row][cell.col] == UNASSIGNED) {
 				for (int permittedValue : cell.permittedIntegers) {
-					for (List<Integer> permutation : this.cages
-							.get(cell.cageId).mapOfPermutationsStartingWithASpecificDigit.get(permittedValue)) {
-						fillCageCoords(this.cages.get(cell.cageId), permutation);
+					Cage cage = this.cages.get(cell.cageId);
+					for (List<Integer> permutation : cage.mapOfPermutationsStartingWithASpecificDigit
+							.get(permittedValue)) {
+						fillCageCoords(cage, permutation);
 						if (commonValidate()) {
 							if (recursiveSolve(i + 1)) {
 								return true;
 							} else {
-								unFillCageCoords(this.cages.get(cell.cageId));
+								unFillCageCoords(cage);
 							}
 						} else {
-							unFillCageCoords(this.cages.get(cell.cageId));
+							unFillCageCoords(cage);
 						}
 					}
 					if (permittedValue == cell.permittedIntegers.get(cell.permittedIntegers.size() - 1))

@@ -12,20 +12,13 @@ public class Cell {
 	protected List<Integer> permittedIntegers = new ArrayList<Integer>();
 	protected int index;
 
-	public Cell(int row, int col, int size, List<List<Integer>> combinationsList, int cageId) {
+	public Cell(int row, int col, int size, List<List<Integer>> combinationsList, int cageId,
+			List<Integer> permittedIntegers) {
 		this.index = calculateIndex(row, col, size);
-		setPermittedIntegers(combinationsList);
+		this.permittedIntegers = permittedIntegers;
 		this.row = row;
 		this.col = col;
 		this.cageId = cageId;
-	}
-
-	private void setPermittedIntegers(List<List<Integer>> combinationsList) {
-		Set<Integer> combinationSetSet = new LinkedHashSet<>(this.permittedIntegers);
-		for (List<Integer> combinationList : combinationsList) {
-			combinationSetSet.addAll(combinationList);
-		}
-		this.permittedIntegers = new ArrayList<>(combinationSetSet);
 	}
 
 	private int calculateIndex(int row, int col, int size) {

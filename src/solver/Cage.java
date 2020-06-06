@@ -2,13 +2,14 @@ package solver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Cage {
 	protected int value;
 	protected List<String> coordinates;
-	protected List<Cell> cageCells=new ArrayList<Cell>();
 	private int size;
 	private static int count = -1;
 	protected int id;
@@ -17,26 +18,34 @@ public class Cage {
 	protected List<List<Integer>> permutations = new ArrayList<List<Integer>>();
 	protected Map<Integer, List<List<Integer>>> mapOfPermutationsStartingWithASpecificDigit = new HashMap<Integer, List<List<Integer>>>();
 
-	public Cage(int value, List<String> coordinates, int size, List<Integer> acceptedNumbers,
-			 List<Cell> cells) {
+	public Cage(int value, List<String> coordinates, int size, List<Integer> acceptedNumbers, List<Cell> cells) {
 		this.value = value;
 		this.coordinates = coordinates;
 		this.size = size;
 		this.id = ++this.count;
 		this.acceptedNumbers = acceptedNumbers;
-		this.combinations = combinationSum3(this.coordinates.size(), this.value);
+		this.combinations = getCombinations(this.coordinates.size(), this.value);
 		permuteAllCombinations();
-		createCells(cells);
+		createCells(cells, setPermittedIntegers());
 	}
 
-	private void createCells(List<Cell> cells) {
+	private List<Integer> setPermittedIntegers() {
+		List<Integer> permittedIntegers = new ArrayList<Integer>();
+		Set<Integer> combinationSetSet = new LinkedHashSet<>(permittedIntegers);
+		for (List<Integer> combinationList : this.combinations) {
+			combinationSetSet.addAll(combinationList);
+		}
+		permittedIntegers = new ArrayList<>(combinationSetSet);
+		return permittedIntegers;
+	}
+
+	private void createCells(List<Cell> cells, List<Integer> permittedIntegers) {
 		for (String cageCoord : this.coordinates) {
 			String[] rc = cageCoord.split(",");
 			int r = Integer.parseInt(rc[0]);
 			int c = Integer.parseInt(rc[1]);
-			Cell cell = new Cell(r, c, this.size, this.combinations, this.id);
+			Cell cell = new Cell(r, c, this.size, this.combinations, this.id, permittedIntegers);
 			cells.add(cell);
-			this.cageCells.add(cell);
 		}
 	}
 
@@ -56,56 +65,55 @@ public class Cage {
 		}
 	}
 
-	public List<List<Integer>> permute(List<Integer> nums) {
-		List<List<Integer>> result = new ArrayList<>();
-		helper(0, nums, result);
-		return result;
+	public List<List<Integer>> permute(List<Integer> combination) {
+		List<List<Integer>> permutations = new ArrayList<>();
+		permutationHelper(0, combination, permutations);
+		return permutations;
 	}
 
-	private void helper(int start, List<Integer> nums, List<List<Integer>> result) {
-		if (start == nums.size() - 1) {
+	private void permutationHelper(int start, List<Integer> combination, List<List<Integer>> permutations) {
+		if (start == combination.size() - 1) {
 			ArrayList<Integer> list = new ArrayList<>();
-			for (int num : nums) {
+			for (int num : combination) {
 				list.add(num);
 			}
-			result.add(list);
+			permutations.add(list);
 			return;
 		}
 
-		for (int i = start; i < nums.size(); i++) {
-			swap(nums, i, start);
-			helper(start + 1, nums, result);
-			swap(nums, i, start);
+		for (int i = start; i < combination.size(); i++) {
+			performSwap(combination, i, start);
+			permutationHelper(start + 1, combination, permutations);
+			performSwap(combination, i, start);
 		}
 	}
 
-	private void swap(List<Integer> nums, int i, int j) {
-		int temp = nums.get(i);
-		nums.set(i, nums.get(j));
-		nums.set(j, temp);
+	private void performSwap(List<Integer> combination, int i, int j) {
+		int temp = combination.get(i);
+		combination.set(i, combination.get(j));
+		combination.set(j, temp);
 	}
 
-	public List<List<Integer>> combinationSum3(int k, int n) {
-		List<List<Integer>> result = new ArrayList<List<Integer>>();
-		List<Integer> curr = new ArrayList<Integer>();
-		helper(result, curr, k, 0, n);
-		return result;
+	public List<List<Integer>> getCombinations(int k, int n) {
+		List<List<Integer>> combinations = new ArrayList<List<Integer>>();
+		List<Integer> currCombination = new ArrayList<Integer>();
+		combinationHelper(combinations, currCombination, k, 0, n);
+		return combinations;
 	}
 
-	public void helper(List<List<Integer>> result, List<Integer> curr, int k, int start, int sum) {
+	public void combinationHelper(List<List<Integer>> combinations, List<Integer> currCombination, int k, int start,
+			int sum) {
 		if (sum < 0) {
 			return;
 		}
-
-		if (sum == 0 && curr.size() == k) {
-			result.add(new ArrayList<Integer>(curr));
+		if (sum == 0 && currCombination.size() == k) {
+			combinations.add(new ArrayList<Integer>(currCombination));
 			return;
 		}
-
 		for (int i = start; i < this.size; i++) {
-			curr.add(this.acceptedNumbers.get(i));
-			helper(result, curr, k, i + 1, sum - this.acceptedNumbers.get(i));
-			curr.remove(curr.size() - 1);
+			currCombination.add(this.acceptedNumbers.get(i));
+			combinationHelper(combinations, currCombination, k, i + 1, sum - this.acceptedNumbers.get(i));
+			currCombination.remove(currCombination.size() - 1);
 		}
 	}
 }
