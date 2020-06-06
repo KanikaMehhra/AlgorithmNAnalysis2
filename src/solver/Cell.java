@@ -1,9 +1,7 @@
 package solver;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Cell {
 	protected int cageId;

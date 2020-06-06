@@ -4,20 +4,13 @@ package solver;
  * @author Jeffrey Chan & Minyi Li, RMIT 2020
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import grid.KillerSudokuGrid;
-import grid.SudokuGrid;
 
 /**
  * Your advanced solver for Killer Sudoku.
  */
 
 public class KillerAdvancedSolver extends KillerSudokuSolver {
-	private static final int START_INDEX = 0;
 
 	public KillerAdvancedSolver() {
 		super();

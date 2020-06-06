@@ -19,6 +19,7 @@ import grid.SudokuGrid;
  * so and then no need to change the hierarchy of solver types.
  */
 public abstract class KillerSudokuSolver extends SudokuSolver {
+	private static final int START_INDEX = 0;
 	protected static final int UNASSIGNED = -1;
 	protected int[][] matrix;
 	protected int size;
@@ -44,7 +45,7 @@ public abstract class KillerSudokuSolver extends SudokuSolver {
 		this.cageCoordsWithValuesMap = ((KillerSudokuGrid) grid).getCageCoordsWithValuesMap();
 		setCagesInfo();
 		Collections.sort(this.cells, new CellIndexComparator());
-		return recursiveSolve(0);
+		return recursiveSolve(START_INDEX);
 	} // end of solve()
 	
 	protected void fillCageCoords(Cage cage, List<Integer> permutation) {
