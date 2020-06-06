@@ -21,14 +21,14 @@ public class KillerAdvancedSolver extends KillerSudokuSolver {
 			Cell cell = this.cells.get(i);
 			if (this.matrix[cell.row][cell.col] == UNASSIGNED) {
 				for (int permittedValue : cell.permittedIntegers) {
-					for (List<Integer> permutation : this.cages
-							.get(cell.cageId).mapOfPermutationsStartingWithASpecificDigit.get(permittedValue)) {
-						if (validateThePermutation(this.cages.get(cell.cageId), permutation)) {
-							fillCageCoords(this.cages.get(cell.cageId), permutation);
+					Cage cage=this.cages.get(cell.cageId);
+					for (List<Integer> permutation : cage.mapOfPermutationsStartingWithASpecificDigit.get(permittedValue)) {
+						if (validateThePermutation(cage, permutation)) {
+							fillCageCoords(cage, permutation);
 							if (recursiveSolve(i + 1)) {
 								return true;
 							} else {
-								unFillCageCoords(this.cages.get(cell.cageId));
+								unFillCageCoords(cage);
 							}
 						}
 					}
